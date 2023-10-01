@@ -4,19 +4,18 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.bogdan801.bulletpower.presentation.screens.HomeScreen
+import com.bogdan801.bulletpower.presentation.screens.home.HomeScreen
 
 @Composable
 fun Navigation(
-    navController: NavHostController,
-    //authUIClient: AuthUIClient
+    navController: NavHostController
 ) {
 
     NavHost(
         navController = navController,
-        startDestination = Screen.HomeScreen.route
+        startDestination = Screen.Home.route
     ){
-        composable(Screen.HomeScreen.route){
+        composable(Screen.Home.route){
             HomeScreen(navController = navController)
         }
 

@@ -1,8 +1,12 @@
 package com.bogdan801.bulletpower.di
 
 import android.content.Context
+import com.bogdan801.bulletpower.data.util.login.AuthUIClient
 import com.bogdan801.bulletpower.data.repository.RepositoryImpl
 import com.bogdan801.bulletpower.domain.repository.Repository
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,24 +23,22 @@ object AppModule {
         return app as BaseApplication
     }
 
-    /*@Singleton
+    @Singleton
     @Provides
     fun provideAuthUIClient(@ApplicationContext app: Context): AuthUIClient {
         return AuthUIClient(
-            context = app,
-            oneTapClient = Identity.getSignInClient(app)
+            context = app
         )
-    }*/
+    }
 
-    /*@Singleton
+    @Singleton
     @Provides
     fun provideRealtimeDatabase(): DatabaseReference {
-        return Firebase.database("https://digitalfarmer-6f2c7-default-rtdb.europe-west1.firebasedatabase.app/").reference
-    }*/
-
+        return Firebase.database("https://bulletpower-27c60-default-rtdb.europe-west1.firebasedatabase.app/").reference
+    }
     @Provides
     @Singleton
-    fun provideRepository(): Repository {
-        return RepositoryImpl()
+    fun provideRepository(db: DatabaseReference, client: AuthUIClient, @ApplicationContext app: Context): Repository {
+        return RepositoryImpl(db, client, app)
     }
 }
