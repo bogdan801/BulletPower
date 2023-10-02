@@ -3,8 +3,6 @@ package com.bogdan801.bulletpower.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.navigation.compose.rememberNavController
 import com.bogdan801.bulletpower.data.util.login.AuthUIClient
 import com.bogdan801.bulletpower.presentation.components.ContentBlocker
@@ -26,15 +24,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             BulletPowerTheme {
-                Surface(color = MaterialTheme.colorScheme.background) {
-                    ContentBlocker(
-                        databaseReference = db,
-                        authUIClient = auth
-                    ) {
-                        Navigation(
-                            navController = rememberNavController()
-                        )
-                    }
+                ContentBlocker(
+                    databaseReference = db,
+                    authUIClient = auth
+                ) {
+                    Navigation(
+                        navController = rememberNavController()
+                    )
                 }
             }
         }

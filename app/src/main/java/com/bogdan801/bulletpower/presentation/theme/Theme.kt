@@ -26,7 +26,7 @@ fun BulletPowerTheme(
 ) {
     val colorScheme = mainColorScheme
     val systemUiController = rememberSystemUiController()
-    systemUiController.setSystemBarsColor(color = colorScheme.background)
+    systemUiController.setSystemBarsColor(color = colorScheme.secondaryContainer)
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
