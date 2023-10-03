@@ -1,5 +1,7 @@
 package com.bogdan801.bulletpower.presentation.components
 
+import android.graphics.Rect
+import android.view.ViewTreeObserver
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -22,9 +24,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -43,6 +50,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 
 @Composable
 fun DigitDisplay(
@@ -55,6 +63,7 @@ fun DigitDisplay(
     onValueChange: (Double) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
+    val scope = rememberCoroutineScope()
 
     val cellHeight = when(displaySize){
         DisplaySize.Small -> 42.dp
@@ -63,7 +72,7 @@ fun DigitDisplay(
     }
     val cellWidth = when(displaySize){
         DisplaySize.Small -> 32.dp
-        DisplaySize.Medium -> 55.dp
+        DisplaySize.Medium -> 35.dp
         DisplaySize.Large -> 38.dp
     }
     val cellSpacing = when(displaySize){
@@ -76,6 +85,7 @@ fun DigitDisplay(
         DisplaySize.Medium -> MaterialTheme.typography.headlineMedium
         DisplaySize.Large -> MaterialTheme.typography.headlineLarge
     }
+    var isFocused by rememberSaveable { mutableStateOf(false) }
 
     var displayState by rememberSaveable {
         mutableStateOf(
@@ -86,12 +96,19 @@ fun DigitDisplay(
             }
         )
     }
-
     LaunchedEffect(key1 = value){
         displayState = value.toStringDisplay(digitCount, dotAfterDigit)
     }
 
-    var isFocused by rememberSaveable { mutableStateOf(false) }
+    val digitFocusMap = remember { mutableStateOf(mapOf<Int, Boolean>()) }
+    LaunchedEffect(key1 = digitFocusMap.value){
+        if(!digitFocusMap.value.values.contains(true) && isFocused) {
+            isFocused = false
+        }
+        if(digitFocusMap.value.values.contains(true) && !isFocused){
+            isFocused = true
+        }
+    }
 
     Row(
         modifier = modifier.height(cellHeight)
@@ -113,14 +130,14 @@ fun DigitDisplay(
                 }
             }
             else if(i != 0) Spacer(modifier = Modifier.width(cellSpacing))
-            var isDigitInFocus by rememberSaveable { mutableStateOf(false)}
             DisplayCell(
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(cellWidth)
                     .onFocusChanged {
-                        isDigitInFocus = it.isFocused
-                        if (it.isFocused) isFocused = true
+                        digitFocusMap.value = digitFocusMap.value
+                            .toMutableMap()
+                            .apply { set(i, it.isFocused) }
                     },
                 value = displayState[i],
                 onValueChange = { newString ->
@@ -140,7 +157,9 @@ fun DigitDisplay(
 
                     val shouldClearFocus = newString.length == 2 && i == (digitCount-1)
                     if(shouldClearFocus) {
-                        focusManager.clearFocus()
+                        scope.launch {
+                            focusManager.clearFocus()
+                        }
                         isFocused = false
                     }
 
@@ -150,72 +169,20 @@ fun DigitDisplay(
                     focusManager.clearFocus()
                     isFocused = false
                 },
-                isCellFocused = isDigitInFocus,
+                isCellFocused = digitFocusMap.value[i] ?: false,
                 isDisplayFocused = isFocused,
                 isReadOnly = isReadOnly,
                 textStyle = cellTextStyle
             )
-        }
-    }
-}
-
-private fun Double.toStringDisplay(digitCount: Int, dotAfterDigit: Int) : String {
-    val stringRepresentation = toString()
-    val splitParts = stringRepresentation.split(".")
-    val output = if(splitParts.size == 2) {
-        val beforeDot = splitParts[0]
-        val afterDot = splitParts[1]
-        buildString {
-            repeat(digitCount){ i ->
-                //before dot
-                if(i < dotAfterDigit){
-                    val digitToAppend = if((beforeDot.length - dotAfterDigit + i) in 0..beforeDot.lastIndex){
-                        beforeDot[beforeDot.length - dotAfterDigit + i]
-                    }
-                    else '0'
-                    append(digitToAppend)
-                }
-                //after dot
-                else{
-                    val digitToAppend = if((i - dotAfterDigit) in 0..afterDot.lastIndex){
-                        afterDot[i - dotAfterDigit]
-                    }
-                    else '0'
-                    append(digitToAppend)
+            val isKeyboardVisible by keyboardAsState()
+            LaunchedEffect(key1 = isKeyboardVisible){
+                if(isKeyboardVisible == Keyboard.Closed) {
+                    focusManager.clearFocus()
+                    isFocused = false
                 }
             }
         }
     }
-    else {
-        val beforeDot = splitParts[0]
-        buildString {
-            repeat(digitCount) { i ->
-                //before dot
-                if (i < dotAfterDigit) {
-                    val digitToAppend =
-                        if ((beforeDot.length - dotAfterDigit + i) in 0..beforeDot.lastIndex) {
-                            beforeDot[beforeDot.length - dotAfterDigit + i]
-                        } else '0'
-                    append(digitToAppend)
-                }
-                //after dot
-                else {
-                    append('0')
-                }
-            }
-        }
-    }
-    return output
-}
-
-private fun String.toDoubleDisplay(dotAfterDigit: Int) : Double {
-    val currentString = this
-    return buildString {
-        currentString.forEachIndexed { i, char ->
-            if(i == dotAfterDigit) append('.')
-            append(char)
-        }
-    }.toDouble()
 }
 
 enum class DisplaySize {
@@ -291,4 +258,93 @@ fun DisplayCell(
             }
         }
     }
+}
+
+private fun Double.toStringDisplay(digitCount: Int, dotAfterDigit: Int) : String {
+    val stringRepresentation = toString()
+    val splitParts = stringRepresentation.split(".")
+    val output = if(splitParts.size == 2) {
+        val beforeDot = splitParts[0]
+        val afterDot = splitParts[1]
+        buildString {
+            repeat(digitCount){ i ->
+                //before dot
+                if(i < dotAfterDigit){
+                    val digitToAppend = if((beforeDot.length - dotAfterDigit + i) in 0..beforeDot.lastIndex){
+                        beforeDot[beforeDot.length - dotAfterDigit + i]
+                    }
+                    else '0'
+                    append(digitToAppend)
+                }
+                //after dot
+                else{
+                    val digitToAppend = if((i - dotAfterDigit) in 0..afterDot.lastIndex){
+                        afterDot[i - dotAfterDigit]
+                    }
+                    else '0'
+                    append(digitToAppend)
+                }
+            }
+        }
+    }
+    else {
+        val beforeDot = splitParts[0]
+        buildString {
+            repeat(digitCount) { i ->
+                //before dot
+                if (i < dotAfterDigit) {
+                    val digitToAppend =
+                        if ((beforeDot.length - dotAfterDigit + i) in 0..beforeDot.lastIndex) {
+                            beforeDot[beforeDot.length - dotAfterDigit + i]
+                        } else '0'
+                    append(digitToAppend)
+                }
+                //after dot
+                else {
+                    append('0')
+                }
+            }
+        }
+    }
+    return output
+}
+
+private fun String.toDoubleDisplay(dotAfterDigit: Int) : Double {
+    val currentString = this
+    return buildString {
+        currentString.forEachIndexed { i, char ->
+            if(i == dotAfterDigit) append('.')
+            append(char)
+        }
+    }.toDouble()
+}
+
+private enum class Keyboard {
+    Opened, Closed
+}
+
+@Composable
+private fun keyboardAsState(): State<Keyboard> {
+    val keyboardState = remember { mutableStateOf(Keyboard.Closed) }
+    val view = LocalView.current
+    DisposableEffect(view) {
+        val onGlobalListener = ViewTreeObserver.OnGlobalLayoutListener {
+            val rect = Rect()
+            view.getWindowVisibleDisplayFrame(rect)
+            val screenHeight = view.rootView.height
+            val keypadHeight = screenHeight - rect.bottom
+            keyboardState.value = if (keypadHeight > screenHeight * 0.15) {
+                Keyboard.Opened
+            } else {
+                Keyboard.Closed
+            }
+        }
+        view.viewTreeObserver.addOnGlobalLayoutListener(onGlobalListener)
+
+        onDispose {
+            view.viewTreeObserver.removeOnGlobalLayoutListener(onGlobalListener)
+        }
+    }
+
+    return keyboardState
 }
