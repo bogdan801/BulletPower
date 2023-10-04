@@ -32,7 +32,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -91,11 +90,13 @@ fun HomeScreen(
         ) {
             SelectorButton(
                 selectionItem = SelectionItem.Device,
+                selectedDevice = screenState.device,
                 onClick = {}
             )
             Spacer(modifier = Modifier.height(1.dp))
             SelectorButton(
                 selectionItem = SelectionItem.Bullet,
+                selectedBullet = screenState.bullet,
                 onClick = {}
             )
 
@@ -117,11 +118,10 @@ fun HomeScreen(
                     modifier = Modifier.padding(bottom = 16.dp),
                     verticalAlignment = Alignment.Bottom
                 ) {
-                    var displayValue by rememberSaveable { mutableDoubleStateOf(0.0) }
                     DigitDisplay(
-                        value = displayValue,
+                        value = screenState.bulletWeight,
                         onValueChange = { newValue ->
-                            displayValue = newValue
+                            viewModel.setBulletWeight(newValue)
                         },
                         digitCount = 4,
                         dotAfterDigit = 1,
@@ -216,27 +216,24 @@ fun HomeScreen(
                                     .fillMaxWidth()
                                     .height(98.dp)
                             ) {
-                                var speedDisplay by rememberSaveable { mutableDoubleStateOf(0.0) }
                                 DisplayGridCell(
                                     modifier = Modifier
                                         .weight(1f)
                                         .fillMaxHeight(),
-                                    value = speedDisplay,
+                                    value = screenState.singleShotSpeed,
                                     onValueChange = { newValue ->
-                                        speedDisplay = newValue
-                                    }
+                                        viewModel.setSingleShotSpeed(newValue)
+                                    },
+                                    dotAfterDigit = 3
                                 )
                                 Spacer(modifier = Modifier.width(1.dp))
-                                var energyDisplay by rememberSaveable { mutableDoubleStateOf(0.0) }
                                 DisplayGridCell(
                                     modifier = Modifier
                                         .weight(1f)
                                         .fillMaxHeight(),
-                                    value = energyDisplay,
-                                    onValueChange = { newValue ->
-                                        energyDisplay = newValue
-                                    },
-                                    isReadOnly = true
+                                    value = screenState.singleShotEnergy,
+                                    isReadOnly = true,
+                                    dotAfterDigit = null
                                 )
                             }
                             Spacer(modifier = Modifier.height(1.dp))
@@ -245,16 +242,21 @@ fun HomeScreen(
                                     .fillMaxWidth()
                                     .weight(1f)
                             )
-                            ButtonGridCell(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(48.dp),
-                                title = "Додати до рейтингу",
-                                icon = {
-                                    Icon(painter = painterResource(id = R.drawable.ic_rating), contentDescription = "")
-                                },
-                                onClick = {}
-                            )
+                            if(screenState.device != null && screenState.bullet != null) {
+                                ButtonGridCell(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(48.dp),
+                                    title = "Додати до рейтингу",
+                                    icon = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_rating),
+                                            contentDescription = ""
+                                        )
+                                    },
+                                    onClick = {}
+                                )
+                            }
                         }
                     }
                     1 -> {

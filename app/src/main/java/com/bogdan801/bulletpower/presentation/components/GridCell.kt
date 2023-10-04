@@ -56,10 +56,10 @@ fun DisplayGridCell(
     containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
     isReadOnly: Boolean = false,
     digitCount: Int = 4,
-    dotAfterDigit: Int = 1,
+    dotAfterDigit: Int? = 1,
     displaySize: DisplaySize = DisplaySize.Medium,
     value: Double,
-    onValueChange: (Double) -> Unit
+    onValueChange: (Double) -> Unit = {}
 ) {
     Box(
         modifier = Modifier

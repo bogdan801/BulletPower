@@ -28,6 +28,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -57,7 +58,7 @@ fun DigitDisplay(
     modifier: Modifier = Modifier,
     displaySize: DisplaySize = DisplaySize.Large,
     digitCount: Int = 4,
-    dotAfterDigit: Int = 1,
+    dotAfterDigit: Int? = 1,
     isReadOnly: Boolean = false,
     value: Double = 0.0,
     onValueChange: (Double) -> Unit,
@@ -87,6 +88,13 @@ fun DigitDisplay(
     }
     var isFocused by rememberSaveable { mutableStateOf(false) }
 
+    var dynamicDotAfterDigit by remember {
+        mutableIntStateOf(dotAfterDigit ?: 1)
+    }
+    LaunchedEffect(key1 = value){
+        dynamicDotAfterDigit = dotAfterDigit ?: value.toString().split(".")[0].length
+    }
+
     var displayState by rememberSaveable {
         mutableStateOf(
             buildString {
@@ -97,7 +105,7 @@ fun DigitDisplay(
         )
     }
     LaunchedEffect(key1 = value){
-        displayState = value.toStringDisplay(digitCount, dotAfterDigit)
+        displayState = value.toStringDisplay(digitCount, dynamicDotAfterDigit)
     }
 
     val digitFocusMap = remember { mutableStateOf(mapOf<Int, Boolean>()) }
@@ -114,7 +122,7 @@ fun DigitDisplay(
         modifier = modifier.height(cellHeight)
     ) {
         repeat(digitCount) { i ->
-            if(i == dotAfterDigit){
+            if(i == dynamicDotAfterDigit){
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
@@ -163,7 +171,7 @@ fun DigitDisplay(
                         isFocused = false
                     }
 
-                    onValueChange(displayState.toDoubleDisplay(dotAfterDigit))
+                    onValueChange(displayState.toDoubleDisplay(dynamicDotAfterDigit))
                 },
                 onDone = {
                     focusManager.clearFocus()
@@ -270,18 +278,20 @@ private fun Double.toStringDisplay(digitCount: Int, dotAfterDigit: Int) : String
             repeat(digitCount){ i ->
                 //before dot
                 if(i < dotAfterDigit){
-                    val digitToAppend = if((beforeDot.length - dotAfterDigit + i) in 0..beforeDot.lastIndex){
-                        beforeDot[beforeDot.length - dotAfterDigit + i]
-                    }
-                    else '0'
+                    val digitToAppend =
+                        if ((beforeDot.length - dotAfterDigit + i) in 0..beforeDot.lastIndex) {
+                            beforeDot[beforeDot.length - dotAfterDigit + i]
+                        }
+                        else '0'
                     append(digitToAppend)
                 }
                 //after dot
                 else{
-                    val digitToAppend = if((i - dotAfterDigit) in 0..afterDot.lastIndex){
-                        afterDot[i - dotAfterDigit]
-                    }
-                    else '0'
+                    val digitToAppend =
+                        if((i - dotAfterDigit) in 0..afterDot.lastIndex){
+                            afterDot[i - dotAfterDigit]
+                        }
+                        else '0'
                     append(digitToAppend)
                 }
             }
@@ -296,7 +306,8 @@ private fun Double.toStringDisplay(digitCount: Int, dotAfterDigit: Int) : String
                     val digitToAppend =
                         if ((beforeDot.length - dotAfterDigit + i) in 0..beforeDot.lastIndex) {
                             beforeDot[beforeDot.length - dotAfterDigit + i]
-                        } else '0'
+                        }
+                        else '0'
                     append(digitToAppend)
                 }
                 //after dot
