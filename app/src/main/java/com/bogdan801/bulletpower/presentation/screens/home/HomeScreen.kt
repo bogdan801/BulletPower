@@ -127,7 +127,6 @@ fun HomeScreen(
                         dotAfterDigit = 1,
                         displaySize = DisplaySize.Large
                     )
-
                     Text(
                         modifier = Modifier.padding(start = 4.dp),
                         text = "гр.",
@@ -268,7 +267,6 @@ fun HomeScreen(
                         }
                     }
                 }
-
             }
             LaunchedEffect(tabIndexState){
                 pagerState.animateScrollToPage(tabIndexState)
