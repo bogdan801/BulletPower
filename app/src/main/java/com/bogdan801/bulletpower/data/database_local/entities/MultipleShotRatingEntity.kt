@@ -1,4 +1,4 @@
-package com.bogdan801.bulletpower.data.database.entities
+package com.bogdan801.bulletpower.data.database_local.entities
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -20,11 +20,13 @@ import androidx.room.PrimaryKey
         )
     ]
 )
-data class SingleShotRatingEntity(
+data class MultipleShotRatingEntity(
     @PrimaryKey(autoGenerate = true)
-    val singleShotID: Int,
+    val multipleShotID: Int,
     val deviceID: Int,
     val bulletID: Int,
-    val speed: Double,
-    val energy: Double
+    val averageSpeed: Double,
+    val averageEnergy: Double
 )
+
+

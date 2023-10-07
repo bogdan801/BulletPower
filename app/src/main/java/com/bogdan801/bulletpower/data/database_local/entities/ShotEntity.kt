@@ -1,4 +1,4 @@
-package com.bogdan801.bulletpower.data.database.entities
+package com.bogdan801.bulletpower.data.database_local.entities
 
 import androidx.room.Entity
 import androidx.room.ForeignKey

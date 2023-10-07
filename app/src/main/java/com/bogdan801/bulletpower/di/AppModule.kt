@@ -2,7 +2,7 @@ package com.bogdan801.bulletpower.di
 
 import android.content.Context
 import androidx.room.Room
-import com.bogdan801.bulletpower.data.database.Database
+import com.bogdan801.bulletpower.data.database_local.Database
 import com.bogdan801.bulletpower.data.util.login.AuthUIClient
 import com.bogdan801.bulletpower.data.repository.RepositoryImpl
 import com.bogdan801.bulletpower.domain.repository.Repository
@@ -41,7 +41,7 @@ object AppModule {
     @Provides
     fun provideLocalDatabase(@ApplicationContext app: Context) =
         Room.databaseBuilder(app, Database::class.java, "database")
-            .fallbackToDestructiveMigration()
+            //.fallbackToDestructiveMigration()
             .build()
 
     @Provides
@@ -49,7 +49,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRepository(db: DatabaseReference, client: AuthUIClient, @ApplicationContext app: Context, localDB: Database): Repository {
-        return RepositoryImpl(db, client, app, localDB.dbDao)
+    fun provideRepository(@ApplicationContext app: Context, localDB: Database): Repository {
+        return RepositoryImpl(app, localDB.dbDao)
     }
 }
