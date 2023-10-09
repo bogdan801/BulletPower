@@ -3,6 +3,9 @@ package com.bogdan801.bulletpower.data.database_local.entities
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.bogdan801.bulletpower.domain.model.Bullet
+import com.bogdan801.bulletpower.domain.model.Device
+import com.bogdan801.bulletpower.domain.model.SingleShotRatingItem
 
 @Entity(
     foreignKeys = [
@@ -27,4 +30,12 @@ data class SingleShotRatingEntity(
     val bulletID: Int,
     val speed: Double,
     val energy: Double
-)
+){
+    fun toSingleShotRatingItem(device: Device, bullet: Bullet) = SingleShotRatingItem(
+        singleShotID = singleShotID,
+        device = device,
+        bullet = bullet,
+        speed = speed,
+        energy = energy
+    )
+}

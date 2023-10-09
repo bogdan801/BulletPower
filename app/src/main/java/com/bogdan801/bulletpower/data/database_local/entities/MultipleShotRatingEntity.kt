@@ -3,6 +3,11 @@ package com.bogdan801.bulletpower.data.database_local.entities
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.bogdan801.bulletpower.domain.model.Bullet
+import com.bogdan801.bulletpower.domain.model.Device
+import com.bogdan801.bulletpower.domain.model.MultipleShotRatingItem
+import com.bogdan801.bulletpower.domain.model.ShotRatingItem
+import com.bogdan801.bulletpower.domain.model.SingleShotRatingItem
 
 @Entity(
     foreignKeys = [
@@ -27,6 +32,15 @@ data class MultipleShotRatingEntity(
     val bulletID: Int,
     val averageSpeed: Double,
     val averageEnergy: Double
-)
+){
+    fun toMultipleShotRatingItem(device: Device, bullet: Bullet, shots: List<ShotRatingItem>) = MultipleShotRatingItem(
+        multipleShotID = multipleShotID,
+        device = device,
+        bullet = bullet,
+        averageSpeed = averageSpeed,
+        averageEnergy = averageEnergy,
+        shots = shots
+    )
+}
 
 

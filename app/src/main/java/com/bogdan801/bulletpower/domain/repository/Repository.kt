@@ -9,9 +9,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface Repository {
     suspend fun insertDevice(device: Device): Long
+    suspend fun updateDevice(device: Device)
     suspend fun insertBullet(bullet: Bullet): Long
-    suspend fun insertSingleShotRatingItem(singleShotRatingItem: SingleShotRatingItem): Long
-    suspend fun insertMultipleShotRatingItem(multipleShotRatingItem: MultipleShotRatingItem): Long
+    suspend fun updateBullet(bullet: Bullet)
+    suspend fun insertSingleShotRatingItem(singleShotRatingItem: SingleShotRatingItem, deviceID: Int, bulletID: Int): Long
+    suspend fun insertMultipleShotRatingItem(multipleShotRatingItem: MultipleShotRatingItem, deviceID: Int, bulletID: Int): Long
     suspend fun insertShotRatingItem(shotRatingItem: ShotRatingItem): Long
 
     suspend fun deleteDevice(deviceID: Int)
@@ -27,7 +29,7 @@ interface Repository {
 
     suspend fun searchBullets(searchQuery: String): List<Bullet>
     suspend fun searchDevices(searchQuery: String): List<Device>
-    suspend fun searchSingleShotRating(searchQuery: String): List<SingleShotRatingItem>
-    suspend fun searchMultipleShotRating(searchQuery: String): List<MultipleShotRatingItem>
+    fun searchSingleShotRating(searchQuery: String, listToSearch: List<SingleShotRatingItem>): List<SingleShotRatingItem>
+    fun searchMultipleShotRating(searchQuery: String, listToSearch: List<MultipleShotRatingItem>): List<MultipleShotRatingItem>
 
 }

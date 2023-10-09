@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
+import androidx.room.Update
 import com.bogdan801.bulletpower.data.database_local.entities.BulletEntity
 import com.bogdan801.bulletpower.data.database_local.entities.DeviceEntity
 import com.bogdan801.bulletpower.data.database_local.entities.MultipleShotRatingEntity
@@ -19,14 +19,23 @@ interface Dao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDeviceEntity(deviceEntity: DeviceEntity): Long
 
+    @Update
+    suspend fun updateDeviceEntity(deviceEntity: DeviceEntity)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertBulletEntity(deviceEntity: DeviceEntity): Long
+    suspend fun insertBulletEntity(bulletEntity: BulletEntity): Long
+
+    @Update
+    suspend fun updateBulletEntity(bulletEntity: BulletEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSingleShotEntity(singleShotRatingEntity: SingleShotRatingEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMultipleShotEntity(multipleShotRatingEntity: MultipleShotRatingEntity): Long
+
+    @Update
+    suspend fun updateMultipleShotEntity(multipleShotRatingEntity: MultipleShotRatingEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertShotEntity(shotEntity: ShotEntity): Long
@@ -66,6 +75,9 @@ interface Dao {
     @Query("SELECT * FROM multipleshotratingentity")
     fun getMultipleShotRating(): Flow<List<MultipleShotRatingWithShotsJunction>>
 
+    @Query("SELECT * FROM multipleshotratingentity WHERE multipleShotID = :multipleShotID")
+    suspend fun getMultipleShotRatingEntityByID(multipleShotID: Int): MultipleShotRatingWithShotsJunction
+
     @Query("SELECT * FROM shotentity WHERE shotID = :shotID")
     suspend fun getShotByID(shotID: Int) : ShotEntity
 
@@ -74,7 +86,7 @@ interface Dao {
         """
             SELECT * 
             FROM deviceentity 
-            WHERE LOWER(name) LIKE '%' || LOWER(:searchQuery) || '%' OR LOWER(type) LIKE '%' || LOWER(:searchQuery) || '%'
+            WHERE LOWER(name) LIKE '%' || LOWER(:searchQuery) || '%' OR LOWER(type) LIKE '%' || LOWER(:searchQuery) || '%' OR LOWER(caliber) LIKE '%' || LOWER(:searchQuery) || '%'
         """
     )
     suspend fun searchDevices(searchQuery: String) : List<DeviceEntity>
@@ -83,7 +95,7 @@ interface Dao {
         """
             SELECT * 
             FROM bulletentity 
-            WHERE LOWER(name) LIKE '%' || LOWER(:searchQuery) || '%' OR LOWER(caliber) LIKE '%' || LOWER(:searchQuery) || '%'
+            WHERE LOWER(name) LIKE '%' || LOWER(:searchQuery) || '%' OR LOWER(caliber) LIKE '%' || LOWER(:searchQuery) || '%' OR LOWER(weight) LIKE '%' || LOWER(:searchQuery) || '%'
         """
     )
     suspend fun searchBullets(searchQuery: String) : List<BulletEntity>

@@ -3,13 +3,22 @@ package com.bogdan801.bulletpower.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.rememberNavController
+import com.bogdan801.bulletpower.data.database_local.Dao
 import com.bogdan801.bulletpower.data.util.login.AuthUIClient
+import com.bogdan801.bulletpower.domain.model.Bullet
+import com.bogdan801.bulletpower.domain.model.Device
+import com.bogdan801.bulletpower.domain.model.MultipleShotRatingItem
+import com.bogdan801.bulletpower.domain.model.ShotRatingItem
+import com.bogdan801.bulletpower.domain.model.SingleShotRatingItem
+import com.bogdan801.bulletpower.domain.repository.Repository
 import com.bogdan801.bulletpower.presentation.components.ContentBlocker
 import com.bogdan801.bulletpower.presentation.navigation.Navigation
 import com.bogdan801.bulletpower.presentation.theme.BulletPowerTheme
 import com.google.firebase.database.DatabaseReference
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -19,6 +28,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var db: DatabaseReference
+
+    @Inject
+    lateinit var repository: Repository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

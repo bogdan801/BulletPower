@@ -25,25 +25,32 @@ fun Device.toDeviceEntity(): DeviceEntity = DeviceEntity(
     caliber = caliber
 )
 
-fun MultipleShotRatingItem.toMultipleShotRatingEntity(): MultipleShotRatingEntity = MultipleShotRatingEntity(
+fun MultipleShotRatingItem.toMultipleShotRatingEntity(deviceID: Int, bulletID: Int): MultipleShotRatingEntity = MultipleShotRatingEntity(
     multipleShotID = multipleShotID,
-    deviceID = device.deviceID,
-    bulletID = bullet.bulletID,
+    deviceID = deviceID,
+    bulletID = bulletID,
     averageSpeed = averageSpeed,
     averageEnergy = averageEnergy
 )
 
 fun ShotRatingItem.toShotEntity(): ShotEntity = ShotEntity(
     shotID = shotID,
-    speed = speed,
     multipleShotID = multipleShotID,
+    speed = speed,
     energy = energy
 )
 
-fun SingleShotRatingItem.toSingleShotRatingEntity(): SingleShotRatingEntity = SingleShotRatingEntity(
+fun SingleShotRatingItem.toSingleShotRatingEntity(deviceID: Int, bulletID: Int): SingleShotRatingEntity = SingleShotRatingEntity(
     singleShotID = singleShotID,
-    deviceID = device.deviceID,
-    bulletID = bullet.bulletID,
+    deviceID = deviceID,
+    bulletID = bulletID,
+    speed = speed,
+    energy = energy
+)
+
+fun ShotRatingItem.toShotEntity(parentID: Int? = null): ShotEntity = ShotEntity(
+    shotID = shotID,
+    multipleShotID = parentID ?: multipleShotID,
     speed = speed,
     energy = energy
 )
