@@ -60,6 +60,7 @@ fun DigitDisplay(
     digitCount: Int = 4,
     dotAfterDigit: Int? = 1,
     isReadOnly: Boolean = false,
+    shouldCloseKeyboard: Boolean = true,
     value: Double = 0.0,
     onValueChange: (Double) -> Unit,
 ) {
@@ -163,7 +164,7 @@ fun DigitDisplay(
                     val shouldMoveFocusForward = newString.length == 2 && i != (digitCount-1)
                     if(shouldMoveFocusForward) focusManager.moveFocus(FocusDirection.Next)
 
-                    val shouldClearFocus = newString.length == 2 && i == (digitCount-1)
+                    val shouldClearFocus = newString.length == 2 && i == (digitCount-1) && shouldCloseKeyboard
                     if(shouldClearFocus) {
                         scope.launch {
                             focusManager.clearFocus()

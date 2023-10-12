@@ -6,4 +6,6 @@ data class SingleShotRatingItem(
     val bullet: Bullet? = null,
     val speed: Double,
     val energy: Double
-)
+){
+
+}

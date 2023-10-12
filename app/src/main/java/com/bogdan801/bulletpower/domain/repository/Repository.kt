@@ -32,4 +32,5 @@ interface Repository {
     fun searchSingleShotRating(searchQuery: String, listToSearch: List<SingleShotRatingItem>): List<SingleShotRatingItem>
     fun searchMultipleShotRating(searchQuery: String, listToSearch: List<MultipleShotRatingItem>): List<MultipleShotRatingItem>
 
+    suspend fun isSingleShotItemPresent(shot: SingleShotRatingItem): Int
 }

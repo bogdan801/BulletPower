@@ -1,18 +1,17 @@
 package com.bogdan801.bulletpower.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 
@@ -41,7 +40,7 @@ fun TextGridCell(
 @Composable
 fun EmptyGridCell(
     modifier: Modifier,
-    containerColor: Color = MaterialTheme.colorScheme.primaryContainer
+    containerColor: Color = MaterialTheme.colorScheme.secondaryContainer
 ){
     Box(
         modifier = Modifier
@@ -53,11 +52,12 @@ fun EmptyGridCell(
 @Composable
 fun DisplayGridCell(
     modifier: Modifier,
-    containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
+    containerColor: Color = MaterialTheme.colorScheme.secondaryContainer,
     isReadOnly: Boolean = false,
     digitCount: Int = 4,
     dotAfterDigit: Int? = 1,
     displaySize: DisplaySize = DisplaySize.Medium,
+    shouldCloseKeyboard: Boolean = true,
     value: Double,
     onValueChange: (Double) -> Unit = {}
 ) {
@@ -73,7 +73,8 @@ fun DisplayGridCell(
             isReadOnly = isReadOnly,
             digitCount = digitCount,
             dotAfterDigit = dotAfterDigit,
-            displaySize = displaySize
+            displaySize = displaySize,
+            shouldCloseKeyboard = shouldCloseKeyboard
         )
     }
 }
@@ -88,20 +89,20 @@ fun ButtonGridCell(
     containerColor: Color = MaterialTheme.colorScheme.primary,
     onClick: () -> Unit
 ) {
-    Button(
-        modifier = modifier,
-        shape = RectangleShape,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = containerColor
-        ),
-        onClick = onClick
+    Box(
+        modifier = modifier
+            .clickable(onClick = onClick)
+            .background(containerColor),
+        contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = title,
-            style = titleTextStyle,
-            color = titleTextColor
-        )
-        Spacer(modifier = Modifier.width(4.dp))
-        icon?.invoke()
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = title,
+                style = titleTextStyle,
+                color = titleTextColor
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            icon?.invoke()
+        }
     }
 }

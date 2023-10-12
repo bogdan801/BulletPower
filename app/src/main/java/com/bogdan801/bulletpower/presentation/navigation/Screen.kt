@@ -5,7 +5,8 @@ sealed class Screen(val route: String){
     object Devices: Screen("devices")
     object Bullets: Screen("bullets")
     object Graph: Screen("graph")
-    object Rating: Screen("rating")
+    object RatingSingleShot: Screen("rating-single")
+    object RatingMultipleShot: Screen("rating-multiple")
     object Settings: Screen("settings")
 
     fun withArgs(vararg args: String): String {

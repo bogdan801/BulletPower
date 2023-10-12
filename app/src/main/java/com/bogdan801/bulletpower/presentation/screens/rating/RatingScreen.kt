@@ -13,9 +13,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 
 @Composable
-fun GraphScreen(
+fun RatingScreen(
     navController: NavController,
-    viewModel: RatingViewModel = hiltViewModel()
+    viewModel: RatingViewModel = hiltViewModel(),
+    isSingleShot: Boolean = true
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     Box (

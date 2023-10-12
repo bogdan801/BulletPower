@@ -72,6 +72,7 @@ interface Dao {
     @Query("SELECT * FROM singleshotratingentity")
     fun getSingleShotRating() : Flow<List<SingleShotRatingEntity>>
 
+
     @Query("SELECT * FROM multipleshotratingentity")
     fun getMultipleShotRating(): Flow<List<MultipleShotRatingWithShotsJunction>>
 

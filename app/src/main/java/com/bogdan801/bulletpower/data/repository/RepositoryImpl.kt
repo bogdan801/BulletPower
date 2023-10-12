@@ -14,6 +14,7 @@ import com.bogdan801.bulletpower.domain.model.ShotRatingItem
 import com.bogdan801.bulletpower.domain.model.SingleShotRatingItem
 import com.bogdan801.bulletpower.domain.repository.Repository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class RepositoryImpl(
@@ -200,5 +201,13 @@ class RepositoryImpl(
         }
 
         return outputList
+    }
+
+
+    //UTIL
+    override suspend fun isSingleShotItemPresent(shot: SingleShotRatingItem): Int {
+        val rating = getSingleShotRating().first()
+        val found = rating.find { it.bullet == shot.bullet && it.device == shot.device }
+        return found?.singleShotID ?: -1
     }
 }
