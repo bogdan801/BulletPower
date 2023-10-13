@@ -164,12 +164,21 @@ fun DigitDisplay(
                     val shouldMoveFocusForward = newString.length == 2 && i != (digitCount-1)
                     if(shouldMoveFocusForward) focusManager.moveFocus(FocusDirection.Next)
 
-                    val shouldClearFocus = newString.length == 2 && i == (digitCount-1) && shouldCloseKeyboard
-                    if(shouldClearFocus) {
-                        scope.launch {
-                            focusManager.clearFocus()
+
+                    val isLastDigit = newString.length == 2 && i == (digitCount-1)
+                    if(isLastDigit){
+                        if(shouldCloseKeyboard) {
+                            scope.launch {
+                                focusManager.clearFocus()
+                            }
+                            isFocused = false
+
                         }
-                        isFocused = false
+                        else{
+                            repeat(digitCount - 1){
+                                focusManager.moveFocus(FocusDirection.Previous)
+                            }
+                        }
                     }
 
                     onValueChange(displayState.toDoubleDisplay(dynamicDotAfterDigit))

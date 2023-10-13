@@ -22,7 +22,9 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +39,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -103,8 +106,8 @@ fun HomeScreen(
                         }
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Налаштування"
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "Меню"
                         )
                     }
                 }
@@ -121,7 +124,7 @@ fun HomeScreen(
                 selectionItem = SelectionItem.Device,
                 selectedDevice = screenState.device,
                 onClick = {
-                    navController.navigate(Screen.Devices.route)
+                    navController.navigate(Screen.Devices(isSelectorScreen = true).routeWithArgs)
                 }
             )
             Spacer(h = 1.dp)
@@ -129,7 +132,7 @@ fun HomeScreen(
                 selectionItem = SelectionItem.Bullet,
                 selectedBullet = screenState.bullet,
                 onClick = {
-                    navController.navigate(Screen.Bullets.route)
+                    navController.navigate(Screen.Bullets(isSelectorScreen = true).routeWithArgs)
                 }
             )
 
@@ -222,7 +225,9 @@ fun HomeScreen(
                 when(page){
                     0 -> {
                         Column(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 1.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ){
                             Row(
@@ -392,14 +397,13 @@ fun HomeScreen(
                                 ) {
                                     items(screenState.shotSeries.size){ i ->
                                         val shotID = screenState.shotSeries.lastIndex - i
+                                        var showDropDownMenu by remember {
+                                            mutableStateOf(false)
+                                        }
                                         ShotRow(
                                             modifier = Modifier.combinedClickable(
-                                                indication = null,
-                                                interactionSource = remember {
-                                                    MutableInteractionSource()
-                                                },
                                                 onLongClick = {
-                                                    viewModel.removeShotFromTheSeries(shotID)
+                                                    showDropDownMenu = true
                                                 },
                                                 onClick = {}
                                             ),
@@ -407,6 +411,23 @@ fun HomeScreen(
                                             shot = screenState.shotSeries[shotID]
                                         )
                                         Spacer(h = 1.dp)
+                                        DropdownMenu(
+                                            modifier = Modifier.background(
+                                                color = MaterialTheme.colorScheme.primaryContainer
+                                            ),
+                                            expanded = showDropDownMenu,
+                                            onDismissRequest = { showDropDownMenu = false }
+                                        ) {
+                                            DropdownMenuItem(
+                                                text = {
+                                                    Text("Видалити постріл")
+                                                },
+                                                onClick = {
+                                                    showDropDownMenu = false
+                                                    viewModel.removeShotFromTheSeries(shotID)
+                                                }
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -477,7 +498,11 @@ fun HomeScreen(
                                             }
                                         }
                                         StatsRow(
-                                            type = StatsRowType.Energy(minEnergy, medEnergy, maxEnergy)
+                                            type = StatsRowType.Energy(
+                                                minEnergy,
+                                                medEnergy,
+                                                maxEnergy
+                                            )
                                         )
                                         Row(
                                             modifier = Modifier
@@ -491,30 +516,43 @@ fun HomeScreen(
                                                 title = "Графік",
                                                 icon = {
                                                     Icon(
-                                                        painter = painterResource(id = R.drawable.ic_graph),
+                                                        painter = painterResource(
+                                                            id = R.drawable.ic_graph
+                                                        ),
                                                         contentDescription = ""
                                                     )
                                                 },
                                                 onClick = {
-
-                                                }
-                                            )
-                                            Spacer(w = 1.dp)
-                                            ButtonGridCell(
-                                                modifier = Modifier
-                                                    .fillMaxHeight()
-                                                    .weight(1f),
-                                                title = "Рейтинг",
-                                                icon = {
-                                                    Icon(
-                                                        painter = painterResource(id = R.drawable.ic_rating),
-                                                        contentDescription = ""
+                                                    navController.navigate(
+                                                        Screen.Graph(
+                                                            shots = screenState.shotSeries
+                                                        ).routeWithArgs
                                                     )
-                                                },
-                                                onClick = {
-
                                                 }
                                             )
+                                            if(
+                                                screenState.device != null &&
+                                                screenState.bullet != null
+                                            ){
+                                                Spacer(w = 1.dp)
+                                                ButtonGridCell(
+                                                    modifier = Modifier
+                                                        .fillMaxHeight()
+                                                        .weight(1f),
+                                                    title = "Рейтинг",
+                                                    icon = {
+                                                        Icon(
+                                                            painter = painterResource(
+                                                                id = R.drawable.ic_rating
+                                                            ),
+                                                            contentDescription = ""
+                                                        )
+                                                    },
+                                                    onClick = {
+
+                                                    }
+                                                )
+                                            }
                                         }
                                     }
                                 }

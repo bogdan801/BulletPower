@@ -1,20 +1,13 @@
 package com.bogdan801.bulletpower.presentation.navigation
 
-sealed class Screen(val route: String){
-    object Home: Screen("home")
-    object Devices: Screen("devices")
-    object Bullets: Screen("bullets")
-    object Graph: Screen("graph")
-    object RatingSingleShot: Screen("rating-single")
-    object RatingMultipleShot: Screen("rating-multiple")
-    object Settings: Screen("settings")
+import com.bogdan801.bulletpower.domain.model.ShotRatingItem
+import com.bogdan801.bulletpower.domain.model.toStringRepresentation
 
-    fun withArgs(vararg args: String): String {
-        return buildString {
-            append(route)
-            args.forEach { arg ->
-                append("/$arg")
-            }
-        }
-    }
+sealed class Screen(val route: String = "", val routeWithArgs: String = ""){
+    object Home: Screen(route = "home", routeWithArgs = "home")
+    data class Devices(val isSelectorScreen: Boolean = false) : Screen(route = "devices", routeWithArgs = "devices/" + (if(isSelectorScreen) "1" else "0"))
+    data class Bullets(val isSelectorScreen: Boolean = false) : Screen(route = "bullets", routeWithArgs = "bullets/" + (if(isSelectorScreen) "1" else "0"))
+    data class Graph(val shots: List<ShotRatingItem>? = null) : Screen(route = "graph", routeWithArgs = "graph/" + shots?.toStringRepresentation())
+    object Rating: Screen(route = "rating", routeWithArgs = "rating")
+    object Settings: Screen(route = "settings", routeWithArgs = "settings")
 }

@@ -1,5 +1,6 @@
 package com.bogdan801.bulletpower.presentation.screens.devices
 
+import android.content.pm.ActivityInfo
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -26,14 +27,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.bogdan801.bulletpower.presentation.components.CustomTopAppBar
 import com.bogdan801.bulletpower.presentation.components.SearchBar
+import com.bogdan801.bulletpower.presentation.util.LockScreenOrientation
 
 @Composable
 fun DevicesScreen(
     navController: NavController,
-    viewModel: DevicesViewModel = hiltViewModel()
+    viewModel: DevicesViewModel = hiltViewModel(),
+    isScreenSelector: Boolean = false
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
+    LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
