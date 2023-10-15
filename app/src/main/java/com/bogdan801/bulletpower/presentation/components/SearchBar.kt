@@ -2,6 +2,7 @@ package com.bogdan801.bulletpower.presentation.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -18,6 +20,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,16 +34,26 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.bogdan801.bulletpower.presentation.util.Keyboard
+import com.bogdan801.bulletpower.presentation.util.keyboardAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar(
     modifier: Modifier = Modifier,
+    searchQuery: String = "",
     placeHolder: String = "Пошук",
     onSearch: (searchQuery: String) -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
+    val keyboardState by keyboardAsState()
     var isFocused by remember { mutableStateOf(false) }
+    LaunchedEffect(key1 = keyboardState){
+        if(keyboardState == Keyboard.Closed && searchQuery.isBlank()) {
+            focusManager.clearFocus()
+            isFocused = false
+        }
+    }
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(30.dp),
@@ -55,11 +68,9 @@ fun SearchBar(
                 .fillMaxSize(),
             contentAlignment = Alignment.CenterStart
         ){
-            var searchQuery by remember { mutableStateOf("") }
             BasicTextField(
                 value = searchQuery,
                 onValueChange = {
-                    searchQuery = it
                     onSearch(it)
                 },
                 textStyle = MaterialTheme.typography.bodyLarge.copy(
@@ -72,7 +83,10 @@ fun SearchBar(
                         shape = RoundedCornerShape(30.dp)
                     )
                     .onFocusChanged { focusState ->
-                        isFocused = focusState.isFocused
+                        if (focusState.isFocused) isFocused = true
+                        else {
+                            if (searchQuery.isBlank()) isFocused = false
+                        }
                     },
                 singleLine = true,
                 cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
@@ -101,7 +115,22 @@ fun SearchBar(
                     },
                     trailingIcon = {
                         Icon(
-                            imageVector = Icons.Default.Search,
+                            modifier = Modifier.clickable(
+                                interactionSource = remember {
+                                    MutableInteractionSource()
+                                },
+                                indication = null,
+                                onClick = {
+                                    if(searchQuery.isNotBlank()){
+                                        onSearch("")
+                                        if(keyboardState == Keyboard.Closed) {
+                                            focusManager.clearFocus()
+                                            isFocused = false
+                                        }
+                                    }
+                                }
+                            ),
+                            imageVector = if(searchQuery.isNotBlank()) Icons.Default.Clear else Icons.Default.Search,
                             contentDescription = "",
                             tint = MaterialTheme.colorScheme.onSurface
                         )

@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -393,41 +394,18 @@ fun HomeScreen(
                                 Spacer(h = 1.dp)
                                 LazyColumn(
                                     modifier = Modifier
-                                        .fillMaxSize()
+                                        .fillMaxSize(),
+                                    verticalArrangement = Arrangement.spacedBy(1.dp)
                                 ) {
                                     items(screenState.shotSeries.size){ i ->
                                         val shotID = screenState.shotSeries.lastIndex - i
-                                        var showDropDownMenu by remember {
-                                            mutableStateOf(false)
-                                        }
                                         ShotRow(
-                                            modifier = Modifier.combinedClickable(
-                                                onLongClick = {
-                                                    showDropDownMenu = true
-                                                },
-                                                onClick = {}
-                                            ),
                                             number = screenState.shotSeries.size - i,
-                                            shot = screenState.shotSeries[shotID]
+                                            shot = screenState.shotSeries[shotID],
+                                            onDeleteRowClick = {
+                                                viewModel.removeShotFromTheSeries(shotID)
+                                            }
                                         )
-                                        Spacer(h = 1.dp)
-                                        DropdownMenu(
-                                            modifier = Modifier.background(
-                                                color = MaterialTheme.colorScheme.primaryContainer
-                                            ),
-                                            expanded = showDropDownMenu,
-                                            onDismissRequest = { showDropDownMenu = false }
-                                        ) {
-                                            DropdownMenuItem(
-                                                text = {
-                                                    Text("Видалити постріл")
-                                                },
-                                                onClick = {
-                                                    showDropDownMenu = false
-                                                    viewModel.removeShotFromTheSeries(shotID)
-                                                }
-                                            )
-                                        }
                                     }
                                 }
                             }

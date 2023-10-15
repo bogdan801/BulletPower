@@ -68,10 +68,8 @@ dependencies {
     //datetime
     implementation 'org.jetbrains.kotlinx:kotlinx-datetime:0.3.2'
 
-    //accompanist
-    def accompanist_version = "0.25.1"
-
-    implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
+    //systemuicontroller
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.25.1"
 
     //hilt
     def hilt_version = "2.44"
@@ -104,4 +102,6 @@ dependencies {
     implementation platform("com.google.firebase:firebase-bom:32.2.2")
     implementation "com.google.firebase:firebase-database-ktx"
 
+    //icons
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
 }

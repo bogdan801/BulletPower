@@ -6,6 +6,7 @@ import com.bogdan801.bulletpower.domain.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,4 +18,16 @@ constructor(
 ): ViewModel()  {
     private val _screenState = MutableStateFlow(DevicesScreenState())
     val screenState = _screenState.asStateFlow()
+
+    fun doSearch(searchQuery: String){
+        _screenState.update {
+            it.copy(
+                searchQuery = searchQuery
+            )
+        }
+
+
+    }
+
+
 }
