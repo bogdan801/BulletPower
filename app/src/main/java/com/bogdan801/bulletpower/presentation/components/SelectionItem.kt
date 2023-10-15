@@ -34,7 +34,7 @@ fun DeviceItem(
     modifier: Modifier = Modifier,
     device: Device,
     onClick: () -> Unit = {},
-    onEditClick: () -> Unit = {},
+    onEditClick: (Device) -> Unit = {},
     onDeleteClick: (deviceID: Int) -> Unit = {}
 ) {
     var showDeleteDialog by rememberSaveable {
@@ -50,12 +50,29 @@ fun DeviceItem(
         title = "Видалити пристрій?",
         subtitle = "Ви дійсно бажаєте видалити ${device.name} зі списку пристроїв?"
     )
+
+    var showEditDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+    AddEditDeviceDialogBox(
+        showDialog = showEditDialog,
+        onDismiss = {
+            showEditDialog = false
+        },
+        defaultValues = device,
+        title = "Редагування пристрою",
+        onSave = {
+            showEditDialog = false
+            onEditClick(device)
+        }
+    )
+
     SelectionItem(
         modifier = modifier,
         itemTitle = device.name,
         itemSubtitle = "${device.type} • ${device.caliber}мм",
         onItemClick = onClick,
-        onEditClick = onEditClick,
+        onEditClick = { showEditDialog = true },
         onDeleteClick = { showDeleteDialog = true }
     )
 }
@@ -65,7 +82,7 @@ fun BulletItem(
     modifier: Modifier = Modifier,
     bullet: Bullet,
     onClick: () -> Unit = {},
-    onEditClick: () -> Unit = {},
+    onEditClick: (bullet: Bullet) -> Unit = {},
     onDeleteClick: (bulletID: Int) -> Unit = {}
 ) {
     var showDeleteDialog by rememberSaveable {
@@ -81,12 +98,14 @@ fun BulletItem(
         title = "Видалити кулю?",
         subtitle = "Ви дійсно бажаєте видалити ${bullet.name} зі списку куль?"
     )
+
+
     SelectionItem(
         modifier = modifier,
         itemTitle = bullet.name,
         itemSubtitle = "${bullet.weight}гр. • ${bullet.caliber}мм",
         onItemClick = onClick,
-        onEditClick = onEditClick,
+        onEditClick = { onEditClick(bullet) },
         onDeleteClick = { showDeleteDialog = true }
     )
 }
