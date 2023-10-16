@@ -1,5 +1,6 @@
 package com.bogdan801.bulletpower.presentation.components
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -26,22 +28,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.bogdan801.bulletpower.domain.model.Bullet
 import com.bogdan801.bulletpower.domain.model.Device
 
 @Composable
 fun AddEditDeviceDialogBox(
     showDialog: Boolean,
-    title: String = "",
+    title: String = "Додавання пристрою",
     defaultValues: Device = Device(0, "","",0.0),
     saveButtonText: String = "ЗБЕРЕГТИ",
     onDismiss: () -> Unit,
     onSave: (Device) -> Unit = {}
 ) {
+    val context = LocalContext.current
     var name by rememberSaveable {
         mutableStateOf(defaultValues.name)
     }
@@ -49,8 +54,25 @@ fun AddEditDeviceDialogBox(
         mutableStateOf(defaultValues.type)
     }
     var caliber by rememberSaveable {
-        mutableStateOf(defaultValues.caliber.toString())
+        mutableStateOf(
+            if(defaultValues.caliber != 0.0) defaultValues.caliber.toString()
+            else ""
+        )
     }
+    LaunchedEffect(key1 = showDialog){
+        if(showDialog){
+            name = defaultValues.name
+            type = defaultValues.type
+            caliber = if(defaultValues.caliber != 0.0) defaultValues.caliber.toString()
+                      else ""
+        }
+        else{
+            name = ""
+            type = ""
+            caliber = ""
+        }
+    }
+
     BasicDialogBox(
         showDialog = showDialog,
         onDismiss = onDismiss,
@@ -98,7 +120,176 @@ fun AddEditDeviceDialogBox(
             Button(
                 modifier = Modifier.size(128.dp, 40.dp),
                 onClick = {
-                    onSave(defaultValues)
+                    if(name.isBlank()) {
+                        Toast.makeText(context, "Ім'я не може бути порожнім", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+
+                    if(type.isBlank()) {
+                        Toast.makeText(context, "Тип не може бути порожнім", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+
+                    if(caliber.isBlank()) {
+                        Toast.makeText(context, "Калібр не може бути 0мм", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+                    else if(caliber.toDouble() == 0.0){
+                        Toast.makeText(context, "Калібр не може бути 0мм", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+
+                    onSave(
+                        Device(
+                            deviceID = defaultValues.deviceID,
+                            name = name,
+                            type = type,
+                            caliber = if(caliber.isNotBlank()) caliber.toDouble() else 0.0
+                        )
+                    )
+                    name = ""
+                    type = ""
+                    caliber = ""
+                }
+            ) {
+                Text(
+                    text = saveButtonText,
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun AddEditBulletDialogBox(
+    showDialog: Boolean,
+    title: String = "Додавання кулі",
+    defaultValues: Bullet = Bullet(0, "",0.0,0.0),
+    saveButtonText: String = "ЗБЕРЕГТИ",
+    onDismiss: () -> Unit,
+    onSave: (Bullet) -> Unit = {}
+) {
+    val context = LocalContext.current
+    var name by rememberSaveable {
+        mutableStateOf(defaultValues.name)
+    }
+    var weight by rememberSaveable {
+        mutableStateOf(
+            if(defaultValues.weight != 0.0) defaultValues.weight.toString()
+            else ""
+        )
+    }
+    var caliber by rememberSaveable {
+        mutableStateOf(
+            if(defaultValues.caliber != 0.0) defaultValues.caliber.toString()
+            else ""
+        )
+    }
+    LaunchedEffect(key1 = defaultValues){
+        name = defaultValues.name
+        weight = if(defaultValues.weight != 0.0) defaultValues.weight.toString()
+                 else ""
+        caliber = if(defaultValues.caliber != 0.0) defaultValues.caliber.toString()
+                  else ""
+    }
+    LaunchedEffect(key1 = showDialog){
+        if(showDialog){
+            name = defaultValues.name
+            weight = if(defaultValues.weight != 0.0) defaultValues.weight.toString()
+            else ""
+            caliber = if(defaultValues.caliber != 0.0) defaultValues.caliber.toString()
+            else ""
+        }
+        else{
+            name = ""
+            weight = ""
+            caliber = ""
+        }
+    }
+
+    BasicDialogBox(
+        showDialog = showDialog,
+        onDismiss = onDismiss,
+        title = title
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp, horizontal = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            CustomTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(54.dp),
+                value = name,
+                onValueChange = {
+                    name = it
+                },
+                placeholder = "Назва"
+            )
+            CustomTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(54.dp),
+                value = weight,
+                onValueChange = {
+                    weight = it
+                },
+                placeholder = "Вага",
+                type = TextFieldType.Double
+            )
+            CustomTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(54.dp),
+                value = caliber,
+                onValueChange = {
+                    caliber = it
+                },
+                placeholder = "Калібр",
+                imeAction = ImeAction.Done,
+                type = TextFieldType.Double
+            )
+            Button(
+                modifier = Modifier.size(128.dp, 40.dp),
+                onClick = {
+                    if(name.isBlank()) {
+                        Toast.makeText(context, "Ім'я не може бути порожнім", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+
+                    if(weight.isBlank()) {
+                        Toast.makeText(context, "Вага кулі не може бути 0гр", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+                    else if(weight.toDouble() == 0.0){
+                        Toast.makeText(context, "Вага кулі не може бути 0гр", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+
+                    if(caliber.isBlank()) {
+                        Toast.makeText(context, "Калібр не може бути 0мм", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+                    else if(caliber.toDouble() == 0.0){
+                        Toast.makeText(context, "Калібр не може бути 0мм", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+
+                    onSave(
+                        Bullet(
+                            bulletID = defaultValues.bulletID,
+                            name = name,
+                            weight = if(weight.isNotBlank()) weight.toDouble() else 0.0,
+                            caliber = if(caliber.isNotBlank()) caliber.toDouble() else 0.0
+                        )
+                    )
+                    name = ""
+                    weight = ""
+                    caliber = ""
                 }
             ) {
                 Text(

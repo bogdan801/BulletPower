@@ -63,7 +63,7 @@ fun DeviceItem(
         title = "Редагування пристрою",
         onSave = {
             showEditDialog = false
-            onEditClick(device)
+            onEditClick(it)
         }
     )
 
@@ -99,7 +99,21 @@ fun BulletItem(
         subtitle = "Ви дійсно бажаєте видалити ${bullet.name} зі списку куль?"
     )
 
-
+    var showEditDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+    AddEditBulletDialogBox(
+        showDialog = showEditDialog,
+        onDismiss = {
+            showEditDialog = false
+        },
+        defaultValues = bullet,
+        title = "Редагування пристрою",
+        onSave = {
+            showEditDialog = false
+            onEditClick(it)
+        }
+    )
     SelectionItem(
         modifier = modifier,
         itemTitle = bullet.name,

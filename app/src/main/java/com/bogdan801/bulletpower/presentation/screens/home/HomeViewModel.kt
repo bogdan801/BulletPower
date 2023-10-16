@@ -1,6 +1,5 @@
 package com.bogdan801.bulletpower.presentation.screens.home
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bogdan801.bulletpower.domain.model.Bullet
@@ -21,28 +20,10 @@ import javax.inject.Inject
 class HomeViewModel
 @Inject
 constructor(
-    private val repository: Repository,
-    handle: SavedStateHandle
+    private val repository: Repository
 ): ViewModel() {
     private val _screenState = MutableStateFlow(HomeScreenState())
     val screenState = _screenState.asStateFlow()
-
-    fun setDevice(device: Device?){
-        _screenState.update {
-            it.copy(
-                device = device
-            )
-        }
-    }
-
-    fun setBullet(bullet: Bullet?){
-        _screenState.update {
-            it.copy(
-                bullet = bullet
-            )
-        }
-        if(bullet!=null) setBulletWeight(bullet.weight)
-    }
 
     fun setBulletWeight(bulletWeight: Double){
         _screenState.update {
@@ -103,29 +84,37 @@ constructor(
         return result
     }
 
-    fun addSingleShotToRating(shot: SingleShotRatingItem){
+    fun addSingleShotToRating(shot: SingleShotRatingItem, device: Device, bullet: Bullet){
         viewModelScope.launch {
-            if(_screenState.value.device != null && _screenState.value.bullet != null){
-                repository.insertSingleShotRatingItem(
-                    singleShotRatingItem = shot,
-                    deviceID = _screenState.value.device!!.deviceID,
-                    bulletID = _screenState.value.bullet!!.bulletID
-                )
-            }
+            repository.insertSingleShotRatingItem(
+                singleShotRatingItem = shot,
+                deviceID = device.deviceID,
+                bulletID = bullet.bulletID
+            )
         }
     }
 
-    fun addSeriesToRating(multipleShotRatingItem: MultipleShotRatingItem){
+    fun addSeriesToRating(multipleShotRatingItem: MultipleShotRatingItem, device: Device, bullet: Bullet){
         viewModelScope.launch {
-            if(_screenState.value.device != null && _screenState.value.bullet != null){
-                repository.insertMultipleShotRatingItem(
-                    multipleShotRatingItem = multipleShotRatingItem,
-                    deviceID = _screenState.value.device!!.deviceID,
-                    bulletID = _screenState.value.bullet!!.bulletID
-                )
-            }
+            repository.insertMultipleShotRatingItem(
+                multipleShotRatingItem = multipleShotRatingItem,
+                deviceID = device.deviceID,
+                bulletID = bullet.bulletID
+            )
         }
     }
 
     private fun calculateBulletEnergy(speed: Double, mass: Double) = ((mass * (speed * speed)) / 2) * 0.001
+
+    fun setCaliberLimit(caliber: Double){
+        viewModelScope.launch {
+            repository.setCaliberLimit(caliber)
+        }
+    }
+
+    init {
+        viewModelScope.launch {
+            repository.setCaliberLimit(0.0)
+        }
+    }
 }

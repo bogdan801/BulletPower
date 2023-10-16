@@ -31,7 +31,7 @@ fun Navigation(
             popEnterTransition = TransitionsUtil.enterSlideInTransition(speedOfTransition, true),
             popExitTransition = TransitionsUtil.exitSlideInTransition(speedOfTransition, true)
         ){
-            HomeScreen(navController = navController)
+            HomeScreen(navController = navController, entry = it)
         }
         composable(
             route = Screen.Devices().route + "/{isScreenSelector}",

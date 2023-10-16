@@ -5,7 +5,6 @@ import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -24,8 +23,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +37,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -53,8 +49,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.bogdan801.bulletpower.R
+import com.bogdan801.bulletpower.domain.model.Bullet
+import com.bogdan801.bulletpower.domain.model.Device
 import com.bogdan801.bulletpower.domain.model.ShotRatingItem
 import com.bogdan801.bulletpower.presentation.components.ButtonGridCell
 import com.bogdan801.bulletpower.presentation.components.CustomTopAppBar
@@ -78,12 +77,30 @@ import kotlinx.coroutines.flow.emptyFlow
 @Composable
 fun HomeScreen(
     navController: NavController,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
+    entry: NavBackStackEntry
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+
+    val device: Device? by entry
+        .savedStateHandle
+        .getStateFlow<Device?>("device", null)
+        .collectAsStateWithLifecycle()
+
+    val bullet: Bullet? by entry
+        .savedStateHandle
+        .getStateFlow<Bullet?>("bullet", null)
+        .collectAsStateWithLifecycle()
+
+
+    LaunchedEffect(key1 = device, key2 = bullet){
+        if(device == null && bullet == null){
+            viewModel.setCaliberLimit(0.0)
+        }
+    }
 
     Scaffold(
         modifier = Modifier
@@ -123,7 +140,7 @@ fun HomeScreen(
         ) {
             SelectorButton(
                 selectionItem = SelectionItem.Device,
-                selectedDevice = screenState.device,
+                selectedDevice = device,
                 onClick = {
                     navController.navigate(Screen.Devices(isSelectorScreen = true).routeWithArgs)
                 }
@@ -131,7 +148,7 @@ fun HomeScreen(
             Spacer(h = 1.dp)
             SelectorButton(
                 selectionItem = SelectionItem.Bullet,
-                selectedBullet = screenState.bullet,
+                selectedBullet = bullet,
                 onClick = {
                     navController.navigate(Screen.Bullets(isSelectorScreen = true).routeWithArgs)
                 }
@@ -163,7 +180,7 @@ fun HomeScreen(
                         digitCount = 4,
                         dotAfterDigit = 1,
                         displaySize = DisplaySize.Large,
-                        isReadOnly = screenState.bullet != null
+                        isReadOnly = bullet != null
                     )
                     Text(
                         modifier = Modifier.padding(start = 4.dp),
@@ -282,7 +299,7 @@ fun HomeScreen(
                                     .fillMaxWidth()
                                     .weight(1f)
                             )
-                            if(screenState.device != null && screenState.bullet != null) {
+                            if(device != null && bullet != null) {
                                 ButtonGridCell(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -508,10 +525,7 @@ fun HomeScreen(
                                                     )
                                                 }
                                             )
-                                            if(
-                                                screenState.device != null &&
-                                                screenState.bullet != null
-                                            ){
+                                            if(device != null && bullet != null){
                                                 Spacer(w = 1.dp)
                                                 ButtonGridCell(
                                                     modifier = Modifier

@@ -1,6 +1,8 @@
 package com.bogdan801.bulletpower.presentation.screens.devices
 
 import android.content.pm.ActivityInfo
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -33,12 +35,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.bogdan801.bulletpower.presentation.components.ConfirmationDialog
+import com.bogdan801.bulletpower.domain.model.Device
+import com.bogdan801.bulletpower.presentation.components.AddEditDeviceDialogBox
 import com.bogdan801.bulletpower.presentation.components.CustomTopAppBar
 import com.bogdan801.bulletpower.presentation.components.DeviceItem
 import com.bogdan801.bulletpower.presentation.components.EmptyGridCell
@@ -56,6 +60,7 @@ fun DevicesScreen(
     isScreenSelector: Boolean = false
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
     Scaffold(
@@ -74,8 +79,36 @@ fun DevicesScreen(
             CustomTopAppBar(
                 title = "Список пристроїв",
                 backButton = {
+                    val backAction = {
+                        val selectedDevice: Device? = navController
+                            .previousBackStackEntry
+                            ?.savedStateHandle
+                            ?.get("device")
+
+                        if(selectedDevice != null){
+                            val found = screenState.items.find { it.deviceID == selectedDevice.deviceID }
+                            if(found != null){
+                                navController.previousBackStackEntry
+                                    ?.savedStateHandle
+                                    ?.set<Device?>("device", found)
+                                viewModel.setCaliberLimit(found.caliber)
+                            }
+                            else {
+                                navController.previousBackStackEntry
+                                    ?.savedStateHandle
+                                    ?.remove<Device?>("device")
+                            }
+                        }
+                    }
+
+                    BackHandler(true){
+                        if(isScreenSelector) backAction()
+                        navController.popBackStack()
+                    }
+
                     IconButton(
                         onClick = {
+                            if(isScreenSelector) backAction()
                             navController.popBackStack()
                         }
                     ) {
@@ -89,11 +122,16 @@ fun DevicesScreen(
         },
         floatingActionButtonPosition = FabPosition.End,
         floatingActionButton = {
+            var showAddDialog by rememberSaveable {
+                mutableStateOf(false)
+            }
             FloatingActionButton(
                 modifier = Modifier.size(64.dp),
                 shape = CircleShape,
                 containerColor = MaterialTheme.colorScheme.primary,
-                onClick = {}
+                onClick = {
+                    showAddDialog = true
+                }
             ) {
                 Icon(
                     modifier = Modifier.size(48.dp),
@@ -101,6 +139,16 @@ fun DevicesScreen(
                     contentDescription = "Додати"
                 )
             }
+            AddEditDeviceDialogBox(
+                showDialog = showAddDialog,
+                onDismiss = {
+                    showAddDialog = false
+                },
+                onSave = { device ->
+                    viewModel.addDevice(device)
+                    showAddDialog = false
+                }
+            )
         }
     ) { paddingValues ->
         Column (
@@ -129,8 +177,6 @@ fun DevicesScreen(
                 }
             }
 
-
-
             if(screenState.searchQuery.isBlank()){
                 if(screenState.items.isNotEmpty()){
                     Spacer(h = 1.dp)
@@ -141,23 +187,56 @@ fun DevicesScreen(
                         if(isScreenSelector){
                             item {
                                 SelectionItem(
+                                    modifier = Modifier.animateItemPlacement(),
                                     isItemProvided = false,
-                                    emptyItemTitle = "Без пристрою"
+                                    emptyItemTitle = "Без пристрою",
+                                    onItemClick = {
+                                        navController.previousBackStackEntry
+                                            ?.savedStateHandle
+                                            ?.remove<Device?>("device")
+
+                                        navController.popBackStack()
+                                    }
                                 )
                             }
                         }
-                        items(screenState.items){ device ->
+                        items(
+                            items = screenState.items,
+                            key = { it.deviceID }
+                        ){ device ->
                             DeviceItem(
-                                modifier = Modifier.animateItemPlacement(),
+                                modifier = Modifier.animateItemPlacement(tween(200)),
                                 device = device,
                                 onClick = {
+                                    if (isScreenSelector){
+                                        if(viewModel.lockedCaliber != null && device.caliber != viewModel.lockedCaliber){
+                                            Toast.makeText(
+                                                context,
+                                                "Пристрій з даним колібром не відповідає обраній кулі",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                        else{
+                                            navController.previousBackStackEntry
+                                                ?.savedStateHandle
+                                                ?.set<Device?>("device", device)
 
+                                            navController.popBackStack()
+                                        }
+                                    }
                                 },
-                                onEditClick = {
-
+                                onEditClick = { editedDevice ->
+                                    viewModel.editDevice(editedDevice)
                                 },
-                                onDeleteClick = {
-
+                                onDeleteClick = { id ->
+                                    viewModel.deleteDevice(id)
+                                    /*if(selectedDevice != null){
+                                        if(selectedDevice!!.deviceID == id){
+                                            navController.previousBackStackEntry
+                                                ?.savedStateHandle
+                                                ?.remove<Device?>("device")
+                                        }
+                                    }*/
                                 }
                             )
                         }
@@ -166,6 +245,7 @@ fun DevicesScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(96.dp)
+                                    .animateItemPlacement()
                             )
                         }
                     }
@@ -174,7 +254,7 @@ fun DevicesScreen(
                 else {
                     TextGridCell(
                         modifier = Modifier.fillMaxSize(),
-                        containerColor = MaterialTheme.colorScheme.background,
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
                         text = "Список порожній.\nДодайте пристрій натиснувши на \"+\""
                     )
                 }
@@ -186,17 +266,48 @@ fun DevicesScreen(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(1.dp)
                     ){
-                        items(screenState.foundItems){ device ->
+                        items(
+                            items = screenState.items,
+                            key = { it.deviceID }
+                        ){ device ->
                             DeviceItem(
+                                modifier = Modifier.animateItemPlacement(tween(200)),
                                 device = device,
                                 onClick = {
+                                    if(isScreenSelector){
+                                        if(viewModel.lockedCaliber != null && device.caliber != viewModel.lockedCaliber){
+                                            Toast.makeText(
+                                                context,
+                                                "Пристрій з даним колібром не відповідає обраній кулі",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                        else {
+                                            viewModel.setCaliberLimit(device.caliber)
+                                            navController.previousBackStackEntry
+                                                ?.savedStateHandle
+                                                ?.set<Device?>("device", device)
 
+                                            navController.popBackStack()
+                                        }
+                                    }
                                 },
-                                onEditClick = {
-
+                                onEditClick = { editedDevice ->
+                                    viewModel.editDevice(editedDevice)
+                                    viewModel.clearFound()
+                                    viewModel.doSearch(screenState.searchQuery, 200)
                                 },
-                                onDeleteClick = {
-
+                                onDeleteClick = { id ->
+                                    viewModel.deleteDevice(id)
+                                    viewModel.clearFound()
+                                    viewModel.doSearch(screenState.searchQuery, 200)
+                                    /*if(selectedDevice != null){
+                                        if(selectedDevice!!.deviceID == id){
+                                            navController.previousBackStackEntry
+                                                ?.savedStateHandle
+                                                ?.remove<Device?>("device")
+                                        }
+                                    }*/
                                 }
                             )
                         }
@@ -205,6 +316,7 @@ fun DevicesScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(96.dp)
+                                    .animateItemPlacement()
                             )
                         }
                     }
@@ -213,7 +325,7 @@ fun DevicesScreen(
                 else {
                     TextGridCell(
                         modifier = Modifier.fillMaxSize(),
-                        containerColor = MaterialTheme.colorScheme.background,
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
                         text = "Пристрій не знайдено"
                     )
                 }
