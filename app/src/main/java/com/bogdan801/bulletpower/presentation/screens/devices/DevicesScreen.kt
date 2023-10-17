@@ -8,7 +8,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,11 +40,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.bogdan801.bulletpower.domain.model.Bullet
 import com.bogdan801.bulletpower.domain.model.Device
 import com.bogdan801.bulletpower.presentation.components.AddEditDeviceDialogBox
 import com.bogdan801.bulletpower.presentation.components.CustomTopAppBar
 import com.bogdan801.bulletpower.presentation.components.DeviceItem
-import com.bogdan801.bulletpower.presentation.components.EmptyGridCell
 import com.bogdan801.bulletpower.presentation.components.SearchBar
 import com.bogdan801.bulletpower.presentation.components.SelectionItem
 import com.bogdan801.bulletpower.presentation.components.Spacer
@@ -63,6 +62,17 @@ fun DevicesScreen(
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+
+    val selectedBullet: Bullet? = navController
+        .previousBackStackEntry
+        ?.savedStateHandle
+        ?.get("bullet")
+
+    val selectedDevice: Device? = navController
+        .previousBackStackEntry
+        ?.savedStateHandle
+        ?.get("device")
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -80,18 +90,14 @@ fun DevicesScreen(
                 title = "Список пристроїв",
                 backButton = {
                     val backAction = {
-                        val selectedDevice: Device? = navController
-                            .previousBackStackEntry
-                            ?.savedStateHandle
-                            ?.get("device")
-
                         if(selectedDevice != null){
                             val found = screenState.items.find { it.deviceID == selectedDevice.deviceID }
                             if(found != null){
-                                navController.previousBackStackEntry
-                                    ?.savedStateHandle
-                                    ?.set<Device?>("device", found)
-                                viewModel.setCaliberLimit(found.caliber)
+                                if(found.caliber == selectedDevice.caliber){
+                                    navController.previousBackStackEntry
+                                        ?.savedStateHandle
+                                        ?.set<Device?>("device", found)
+                                }
                             }
                             else {
                                 navController.previousBackStackEntry
@@ -114,7 +120,7 @@ fun DevicesScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Налаштування"
+                            contentDescription = "Назад"
                         )
                     }
                 }
@@ -154,9 +160,10 @@ fun DevicesScreen(
         Column (
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(paddingValues)
+                .background(MaterialTheme.colorScheme.secondaryContainer),
         ){
-            if(screenState.items.isNotEmpty() || screenState.foundItems.isNotEmpty()){
+            if(screenState.items.isNotEmpty()){
                 Box(modifier = Modifier
                     .fillMaxWidth()
                     .height(64.dp)
@@ -179,11 +186,8 @@ fun DevicesScreen(
 
             if(screenState.searchQuery.isBlank()){
                 if(screenState.items.isNotEmpty()){
-                    Spacer(h = 1.dp)
-                    LazyColumn(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(1.dp)
-                    ){
+                    Spacer(h = 1.dp, background = MaterialTheme.colorScheme.background)
+                    LazyColumn(modifier = Modifier.fillMaxWidth()){
                         if(isScreenSelector){
                             item {
                                 SelectionItem(
@@ -198,6 +202,7 @@ fun DevicesScreen(
                                         navController.popBackStack()
                                     }
                                 )
+                                Spacer(h = 1.dp, background = MaterialTheme.colorScheme.background)
                             }
                         }
                         items(
@@ -209,10 +214,10 @@ fun DevicesScreen(
                                 device = device,
                                 onClick = {
                                     if (isScreenSelector){
-                                        if(viewModel.lockedCaliber != null && device.caliber != viewModel.lockedCaliber){
+                                        if(selectedBullet != null && device.caliber != selectedBullet.caliber){
                                             Toast.makeText(
                                                 context,
-                                                "Пристрій з даним колібром не відповідає обраній кулі",
+                                                "Пристрій з даним колібром не сумісний з обраною кулею",
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         }
@@ -227,29 +232,21 @@ fun DevicesScreen(
                                 },
                                 onEditClick = { editedDevice ->
                                     viewModel.editDevice(editedDevice)
-                                },
-                                onDeleteClick = { id ->
-                                    viewModel.deleteDevice(id)
-                                    /*if(selectedDevice != null){
-                                        if(selectedDevice!!.deviceID == id){
+                                    if(selectedDevice != null && selectedDevice.deviceID == editedDevice.deviceID){
+                                        if(selectedDevice.caliber != editedDevice.caliber){
                                             navController.previousBackStackEntry
                                                 ?.savedStateHandle
                                                 ?.remove<Device?>("device")
                                         }
-                                    }*/
+                                    }
+                                },
+                                onDeleteClick = { id ->
+                                    viewModel.deleteDevice(id)
                                 }
                             )
-                        }
-                        item {
-                            EmptyGridCell(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(96.dp)
-                                    .animateItemPlacement()
-                            )
+                            Spacer(h = 1.dp, background = MaterialTheme.colorScheme.background)
                         }
                     }
-                    EmptyGridCell(modifier = Modifier.fillMaxSize())
                 }
                 else {
                     TextGridCell(
@@ -261,29 +258,25 @@ fun DevicesScreen(
             }
             else {
                 if(screenState.foundItems.isNotEmpty()){
-                    Spacer(h = 1.dp)
+                    Spacer(h = 1.dp, background = MaterialTheme.colorScheme.background)
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(1.dp)
                     ){
                         items(
-                            items = screenState.items,
-                            key = { it.deviceID }
+                            items = screenState.foundItems
                         ){ device ->
                             DeviceItem(
-                                modifier = Modifier.animateItemPlacement(tween(200)),
                                 device = device,
                                 onClick = {
                                     if(isScreenSelector){
-                                        if(viewModel.lockedCaliber != null && device.caliber != viewModel.lockedCaliber){
+                                        if(selectedBullet != null && device.caliber != selectedBullet.caliber){
                                             Toast.makeText(
                                                 context,
-                                                "Пристрій з даним колібром не відповідає обраній кулі",
+                                                "Пристрій з даним колібром не сумісний з обраною кулею",
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         }
                                         else {
-                                            viewModel.setCaliberLimit(device.caliber)
                                             navController.previousBackStackEntry
                                                 ?.savedStateHandle
                                                 ?.set<Device?>("device", device)
@@ -295,32 +288,24 @@ fun DevicesScreen(
                                 onEditClick = { editedDevice ->
                                     viewModel.editDevice(editedDevice)
                                     viewModel.clearFound()
-                                    viewModel.doSearch(screenState.searchQuery, 200)
-                                },
-                                onDeleteClick = { id ->
-                                    viewModel.deleteDevice(id)
-                                    viewModel.clearFound()
-                                    viewModel.doSearch(screenState.searchQuery, 200)
-                                    /*if(selectedDevice != null){
-                                        if(selectedDevice!!.deviceID == id){
+                                    viewModel.doSearch(screenState.searchQuery)
+                                    if(selectedDevice != null && selectedDevice.deviceID == editedDevice.deviceID){
+                                        if(selectedDevice.caliber != editedDevice.caliber){
                                             navController.previousBackStackEntry
                                                 ?.savedStateHandle
                                                 ?.remove<Device?>("device")
                                         }
-                                    }*/
+                                    }
+                                },
+                                onDeleteClick = { id ->
+                                    viewModel.deleteDevice(id)
+                                    viewModel.clearFound()
+                                    viewModel.doSearch(screenState.searchQuery)
                                 }
                             )
-                        }
-                        item {
-                            EmptyGridCell(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(96.dp)
-                                    .animateItemPlacement()
-                            )
+                            Spacer(h = 1.dp, background = MaterialTheme.colorScheme.background)
                         }
                     }
-                    EmptyGridCell(modifier = Modifier.fillMaxSize())
                 }
                 else {
                     TextGridCell(

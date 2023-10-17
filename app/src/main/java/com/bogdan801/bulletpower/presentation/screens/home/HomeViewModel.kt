@@ -106,15 +106,4 @@ constructor(
 
     private fun calculateBulletEnergy(speed: Double, mass: Double) = ((mass * (speed * speed)) / 2) * 0.001
 
-    fun setCaliberLimit(caliber: Double){
-        viewModelScope.launch {
-            repository.setCaliberLimit(caliber)
-        }
-    }
-
-    init {
-        viewModelScope.launch {
-            repository.setCaliberLimit(0.0)
-        }
-    }
 }

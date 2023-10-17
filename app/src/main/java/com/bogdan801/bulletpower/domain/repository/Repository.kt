@@ -33,7 +33,4 @@ interface Repository {
     fun searchMultipleShotRating(searchQuery: String, listToSearch: List<MultipleShotRatingItem>): List<MultipleShotRatingItem>
 
     suspend fun isSingleShotItemPresent(shot: SingleShotRatingItem): Int
-
-    suspend fun setCaliberLimit(value: Double)
-    suspend fun getCaliberLimit(): Double?
 }

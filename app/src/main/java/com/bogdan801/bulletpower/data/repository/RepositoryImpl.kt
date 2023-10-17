@@ -7,8 +7,6 @@ import com.bogdan801.bulletpower.data.database_local.toDeviceEntity
 import com.bogdan801.bulletpower.data.database_local.toMultipleShotRatingEntity
 import com.bogdan801.bulletpower.data.database_local.toShotEntity
 import com.bogdan801.bulletpower.data.database_local.toSingleShotRatingEntity
-import com.bogdan801.bulletpower.data.datastore.readStringFromDataStore
-import com.bogdan801.bulletpower.data.datastore.saveStringToDataStore
 import com.bogdan801.bulletpower.domain.model.Bullet
 import com.bogdan801.bulletpower.domain.model.Device
 import com.bogdan801.bulletpower.domain.model.MultipleShotRatingItem
@@ -211,14 +209,5 @@ class RepositoryImpl(
         val rating = getSingleShotRating().first()
         val found = rating.find { it.bullet == shot.bullet && it.device == shot.device }
         return found?.singleShotID ?: -1
-    }
-
-    override suspend fun setCaliberLimit(value: Double) {
-        applicationContext.saveStringToDataStore("caliber", value.toString())
-    }
-
-    override suspend fun getCaliberLimit(): Double? {
-        val value = applicationContext.readStringFromDataStore("caliber")?.toDouble()
-        return if(value == 0.0) null else value
     }
 }

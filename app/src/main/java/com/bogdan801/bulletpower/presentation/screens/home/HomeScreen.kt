@@ -95,11 +95,9 @@ fun HomeScreen(
         .getStateFlow<Bullet?>("bullet", null)
         .collectAsStateWithLifecycle()
 
-
-    LaunchedEffect(key1 = device, key2 = bullet){
-        if(device == null && bullet == null){
-            viewModel.setCaliberLimit(0.0)
-        }
+    LaunchedEffect(key1 = bullet){
+        if(bullet != null) viewModel.setBulletWeight(bullet!!.weight)
+        else viewModel.setBulletWeight(0.0)
     }
 
     Scaffold(
@@ -299,7 +297,7 @@ fun HomeScreen(
                                     .fillMaxWidth()
                                     .weight(1f)
                             )
-                            if(device != null && bullet != null) {
+                            if(device != null && bullet != null && screenState.singleShotSpeed != 0.0) {
                                 ButtonGridCell(
                                     modifier = Modifier
                                         .fillMaxWidth()

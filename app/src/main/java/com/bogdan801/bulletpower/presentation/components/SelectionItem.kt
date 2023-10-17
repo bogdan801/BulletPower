@@ -119,7 +119,7 @@ fun BulletItem(
         itemTitle = bullet.name,
         itemSubtitle = "${bullet.weight}гр. • ${bullet.caliber}мм",
         onItemClick = onClick,
-        onEditClick = { onEditClick(bullet) },
+        onEditClick = { showEditDialog = true },
         onDeleteClick = { showDeleteDialog = true }
     )
 }

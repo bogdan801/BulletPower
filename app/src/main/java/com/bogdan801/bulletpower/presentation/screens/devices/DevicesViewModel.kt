@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,9 +21,6 @@ constructor(
 ): ViewModel()  {
     private val _screenState = MutableStateFlow(DevicesScreenState())
     val screenState = _screenState.asStateFlow()
-
-    var lockedCaliber: Double? = null
-        private set
 
     fun addDevice(device: Device){
         viewModelScope.launch {
@@ -42,13 +40,19 @@ constructor(
         }
     }
 
-    fun doSearch(searchQuery: String, delay: Long = 0){
+    fun doSearch(searchQuery: String){
         viewModelScope.launch {
-            if(delay != 0L) delay(delay)
+            _screenState.update {
+                it.copy(
+                    searchQuery = searchQuery
+                )
+            }
+        }
+
+        viewModelScope.launch {
             _screenState.update {
                 val found = repository.searchDevices(searchQuery)
                 it.copy(
-                    searchQuery = searchQuery,
                     foundItems = found
                 )
             }
@@ -63,7 +67,8 @@ constructor(
         }
     }
 
-    fun clearFound(){
+    fun clearFound(delay: Long = 200){
+        runBlocking { delay(delay) }
         _screenState.update {
             it.copy(
                 foundItems = listOf()
@@ -71,15 +76,8 @@ constructor(
         }
     }
 
-    fun setCaliberLimit(caliber: Double){
-        viewModelScope.launch {
-            repository.setCaliberLimit(caliber)
-        }
-    }
-
     init {
         viewModelScope.launch {
-            lockedCaliber = repository.getCaliberLimit()
             repository.getDevices().collect{ list ->
                 updateList(list)
             }

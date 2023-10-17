@@ -113,7 +113,7 @@ fun AddEditDeviceDialogBox(
                 onValueChange = {
                     caliber = it
                 },
-                placeholder = "Калібр",
+                placeholder = "Калібр, мм",
                 imeAction = ImeAction.Done,
                 type = TextFieldType.Double
             )
@@ -136,6 +136,10 @@ fun AddEditDeviceDialogBox(
                     }
                     else if(caliber.toDouble() == 0.0){
                         Toast.makeText(context, "Калібр не може бути 0мм", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+                    else if(caliber.toDouble() > 20.0){
+                        Toast.makeText(context, "Калібр не може бути більшим за 20мм", Toast.LENGTH_SHORT).show()
                         return@Button
                     }
 
@@ -238,7 +242,7 @@ fun AddEditBulletDialogBox(
                 onValueChange = {
                     weight = it
                 },
-                placeholder = "Вага",
+                placeholder = "Вага, г",
                 type = TextFieldType.Double
             )
             CustomTextField(
@@ -249,7 +253,7 @@ fun AddEditBulletDialogBox(
                 onValueChange = {
                     caliber = it
                 },
-                placeholder = "Калібр",
+                placeholder = "Калібр, мм",
                 imeAction = ImeAction.Done,
                 type = TextFieldType.Double
             )
@@ -269,6 +273,10 @@ fun AddEditBulletDialogBox(
                         Toast.makeText(context, "Вага кулі не може бути 0гр", Toast.LENGTH_SHORT).show()
                         return@Button
                     }
+                    else if(weight.toDouble() > 9.9999){
+                        Toast.makeText(context, "Вага кулі не може бути більша за 10гр", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
 
                     if(caliber.isBlank()) {
                         Toast.makeText(context, "Калібр не може бути 0мм", Toast.LENGTH_SHORT).show()
@@ -276,6 +284,10 @@ fun AddEditBulletDialogBox(
                     }
                     else if(caliber.toDouble() == 0.0){
                         Toast.makeText(context, "Калібр не може бути 0мм", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+                    else if(caliber.toDouble() > 20.0){
+                        Toast.makeText(context, "Калібр не може бути більшим за 20мм", Toast.LENGTH_SHORT).show()
                         return@Button
                     }
 
