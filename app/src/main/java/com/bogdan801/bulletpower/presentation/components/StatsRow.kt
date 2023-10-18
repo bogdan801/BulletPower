@@ -111,7 +111,7 @@ fun StatsRow(
                     modifier = Modifier
                         .fillMaxHeight()
                         .weight(1f),
-                    text = String.format("%.2f", type.min),
+                    text = String.format("%.3f", type.min),
                     containerColor = MaterialTheme.colorScheme.secondaryContainer
                 )
                 Spacer(w = 1.dp)
@@ -119,7 +119,7 @@ fun StatsRow(
                     modifier = Modifier
                         .fillMaxHeight()
                         .weight(1f),
-                    text = String.format("%.2f", type.med),
+                    text = String.format("%.3f", type.med),
                     textStyle = MaterialTheme.typography.displaySmall
                 )
                 Spacer(w = 1.dp)
@@ -127,7 +127,7 @@ fun StatsRow(
                     modifier = Modifier
                         .fillMaxHeight()
                         .weight(1f),
-                    text = String.format("%.2f", type.max),
+                    text = String.format("%.3f", type.max),
                     containerColor = MaterialTheme.colorScheme.secondaryContainer
                 )
             }

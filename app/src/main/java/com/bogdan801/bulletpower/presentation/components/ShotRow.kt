@@ -1,10 +1,7 @@
 package com.bogdan801.bulletpower.presentation.components
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -25,14 +22,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.bogdan801.bulletpower.domain.model.ShotRatingItem
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShotRow(
     modifier: Modifier = Modifier,
@@ -118,7 +113,7 @@ fun ShotRow(
                 modifier = Modifier
                     .fillMaxHeight()
                     .weight(1f),
-                text = String.format("%.2f", shot?.energy ?: 0.0),
+                text = String.format("%.3f", shot?.energy ?: 0.0),
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 textStyle = MaterialTheme.typography.bodyLarge
             )

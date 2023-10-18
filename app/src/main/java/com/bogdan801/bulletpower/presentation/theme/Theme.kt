@@ -17,6 +17,7 @@ private val mainColorScheme = darkColorScheme(
     primaryContainer = Gray20,
     secondaryContainer = Gray10,
     outline = Gray40,
+    outlineVariant = Gray30,
     error = Red10
 )
 

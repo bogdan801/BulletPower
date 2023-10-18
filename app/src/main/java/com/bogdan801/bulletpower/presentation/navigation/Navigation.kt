@@ -6,6 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+//import com.bogdan801.bulletpower.domain.model.ShotRatingItem
 import com.bogdan801.bulletpower.domain.model.toShotList
 import com.bogdan801.bulletpower.presentation.screens.bullets.BulletsScreen
 import com.bogdan801.bulletpower.presentation.screens.devices.DevicesScreen
@@ -32,6 +33,23 @@ fun Navigation(
             popExitTransition = TransitionsUtil.exitSlideInTransition(speedOfTransition, true)
         ){
             HomeScreen(navController = navController, entry = it)
+
+            /*GraphScreen(
+                navController = navController,
+                data = listOf(
+                    ShotRatingItem(speed = 116.0, energy = 3.75),
+                    ShotRatingItem(speed = 114.0, energy = 3.55),
+                    ShotRatingItem(speed = 117.0, energy = 3.80),
+                    ShotRatingItem(speed = 112.0, energy = 3.45),
+                    ShotRatingItem(speed = 119.0, energy = 3.85),
+                    ShotRatingItem(speed = 116.0, energy = 3.75),
+                    ShotRatingItem(speed = 119.0, energy = 3.85),
+                    ShotRatingItem(speed = 111.0, energy = 3.85),
+                    ShotRatingItem(speed = 105.0, energy = 3.85),
+                    ShotRatingItem(speed = 98.0, energy = 3.85),
+                    ShotRatingItem(speed = 102.0, energy = 3.85),
+                )
+            )*/
         }
         composable(
             route = Screen.Devices().route + "/{isScreenSelector}",
