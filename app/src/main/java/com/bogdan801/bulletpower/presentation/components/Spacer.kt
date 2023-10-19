@@ -1,5 +1,6 @@
 package com.bogdan801.bulletpower.presentation.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -15,10 +16,16 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun Spacer(
+    @SuppressLint("ModifierParameter") modifier: Modifier?  = null,
     w: Dp = 0.dp,
     h: Dp = 0.dp,
     background: Color = Color.Transparent
 ) {
+    if(modifier != null){
+        Spacer(
+            modifier = modifier
+        )
+    }
     if(background == Color.Transparent){
         Spacer(
             modifier = Modifier
@@ -30,11 +37,15 @@ fun Spacer(
         Box(
             modifier = Modifier
                 .then(
-                    if(w == 0.dp && h > 0.dp) Modifier.fillMaxWidth().height(h)
+                    if (w == 0.dp && h > 0.dp) Modifier
+                        .fillMaxWidth()
+                        .height(h)
                     else Modifier
                 )
                 .then(
-                    if(h == 0.dp && w > 0.dp) Modifier.fillMaxHeight().width(w)
+                    if (h == 0.dp && w > 0.dp) Modifier
+                        .fillMaxHeight()
+                        .width(w)
                     else Modifier
                 )
                 .background(background)

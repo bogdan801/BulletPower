@@ -75,6 +75,14 @@ constructor(
         }
     }
 
+    fun clearSeries(){
+        _screenState.update {
+            it.copy(
+                shotSeries = listOf()
+            )
+        }
+    }
+
 
     fun isSingleShotItemPresent(shot: SingleShotRatingItem) : Boolean {
         var result: Boolean

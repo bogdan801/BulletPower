@@ -110,4 +110,6 @@ dependencies {
     //chart
     implementation "co.yml:ycharts:2.1.0"
 
+    //capture
+    implementation "dev.shreyaspatil:capturable:1.0.3"
 }

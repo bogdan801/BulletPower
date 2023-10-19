@@ -37,18 +37,20 @@ fun Navigation(
             /*GraphScreen(
                 navController = navController,
                 data = listOf(
+                    ShotRatingItem(speed = 119.0, energy = 3.95),
                     ShotRatingItem(speed = 116.0, energy = 3.75),
-                    ShotRatingItem(speed = 114.0, energy = 3.55),
-                    ShotRatingItem(speed = 117.0, energy = 3.80),
+                    ShotRatingItem(speed = 115.0, energy = 3.55),
+                    ShotRatingItem(speed = 113.0, energy = 3.45),
+                    ShotRatingItem(speed = 116.0, energy = 3.65),
+                    ShotRatingItem(speed = 114.0, energy = 3.45),
+                    ShotRatingItem(speed = 117.0, energy = 3.35),
+                    ShotRatingItem(speed = 113.0, energy = 3.25),
                     ShotRatingItem(speed = 112.0, energy = 3.45),
-                    ShotRatingItem(speed = 119.0, energy = 3.85),
-                    ShotRatingItem(speed = 116.0, energy = 3.75),
-                    ShotRatingItem(speed = 119.0, energy = 3.85),
-                    ShotRatingItem(speed = 111.0, energy = 3.85),
-                    ShotRatingItem(speed = 105.0, energy = 3.85),
-                    ShotRatingItem(speed = 98.0, energy = 3.85),
-                    ShotRatingItem(speed = 102.0, energy = 3.85),
-                )
+                    ShotRatingItem(speed = 111.0, energy = 3.55),
+
+                ),
+                deviceName = "Пристрій",
+                bulletName = "Куля"
             )*/
         }
         composable(
@@ -62,7 +64,10 @@ fun Navigation(
                 }
             )
         ){entry ->
-            DevicesScreen(navController = navController, isScreenSelector = entry.arguments!!.getInt("isScreenSelector") == 1)
+            DevicesScreen(
+                navController = navController,
+                isScreenSelector = entry.arguments!!.getInt("isScreenSelector") == 1
+            )
         }
         composable(
             route = Screen.Bullets().route + "/{isScreenSelector}",
@@ -75,7 +80,10 @@ fun Navigation(
                 }
             )
         ){ entry ->
-            BulletsScreen(navController = navController, isScreenSelector = entry.arguments!!.getInt("isScreenSelector") == 1)
+            BulletsScreen(
+                navController = navController,
+                isScreenSelector = entry.arguments!!.getInt("isScreenSelector") == 1
+            )
         }
         composable(
             route = Screen.Rating.route + "/{isSingleShot}",
@@ -94,21 +102,31 @@ fun Navigation(
             )
         }
         composable(
-            route = Screen.Graph().route + "/{shots}",
+            route = Screen.Graph().route + "/{shots}/{deviceName}/{bulletName}",
             enterTransition = TransitionsUtil.enterSlideInTransition(speedOfTransition),
             exitTransition = TransitionsUtil.exitSlideInTransition(speedOfTransition),
             popExitTransition = TransitionsUtil.exitSlideInTransition(speedOfTransition, true),
             arguments = listOf(
                 navArgument("shots"){
                     type = NavType.StringType
+                },
+                navArgument("deviceName"){
+                    type = NavType.StringType
+                },
+                navArgument("bulletName"){
+                    type = NavType.StringType
                 }
             )
 
         ){ entry ->
             val shotsString = entry.arguments!!.getString("shots")!!
+            val deviceName = entry.arguments!!.getString("deviceName")!!
+            val bulletName = entry.arguments!!.getString("bulletName")!!
             GraphScreen(
                 navController = navController,
-                data = shotsString.toShotList()
+                data = shotsString.toShotList(),
+                deviceName = if(deviceName == "-") null else deviceName,
+                bulletName = if(bulletName == "-") null else bulletName
             )
         }
         composable(

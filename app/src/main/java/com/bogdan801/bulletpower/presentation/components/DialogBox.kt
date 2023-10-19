@@ -146,8 +146,8 @@ fun AddEditDeviceDialogBox(
                     onSave(
                         Device(
                             deviceID = defaultValues.deviceID,
-                            name = name,
-                            type = type,
+                            name = name.trim(),
+                            type = type.trim(),
                             caliber = if(caliber.isNotBlank()) caliber.toDouble() else 0.0
                         )
                     )
@@ -294,7 +294,7 @@ fun AddEditBulletDialogBox(
                     onSave(
                         Bullet(
                             bulletID = defaultValues.bulletID,
-                            name = name,
+                            name = name.trim(),
                             weight = if(weight.isNotBlank()) weight.toDouble() else 0.0,
                             caliber = if(caliber.isNotBlank()) caliber.toDouble() else 0.0
                         )

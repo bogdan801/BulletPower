@@ -1,7 +1,6 @@
 package com.bogdan801.bulletpower.presentation.screens.devices
 
 import android.content.pm.ActivityInfo
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -34,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -59,7 +57,6 @@ fun DevicesScreen(
     isScreenSelector: Boolean = false
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
-    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
 
@@ -215,19 +212,15 @@ fun DevicesScreen(
                                 onClick = {
                                     if (isScreenSelector){
                                         if(selectedBullet != null && device.caliber != selectedBullet.caliber){
-                                            Toast.makeText(
-                                                context,
-                                                "Пристрій з даним колібром не сумісний з обраною кулею",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                        else{
                                             navController.previousBackStackEntry
                                                 ?.savedStateHandle
-                                                ?.set<Device?>("device", device)
-
-                                            navController.popBackStack()
+                                                ?.remove<Bullet?>("bullet")
                                         }
+                                        navController.previousBackStackEntry
+                                            ?.savedStateHandle
+                                            ?.set<Device?>("device", device)
+
+                                        navController.popBackStack()
                                     }
                                 },
                                 onEditClick = { editedDevice ->
@@ -270,19 +263,15 @@ fun DevicesScreen(
                                 onClick = {
                                     if(isScreenSelector){
                                         if(selectedBullet != null && device.caliber != selectedBullet.caliber){
-                                            Toast.makeText(
-                                                context,
-                                                "Пристрій з даним колібром не сумісний з обраною кулею",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                        else {
                                             navController.previousBackStackEntry
                                                 ?.savedStateHandle
-                                                ?.set<Device?>("device", device)
-
-                                            navController.popBackStack()
+                                                ?.remove<Bullet?>("bullet")
                                         }
+                                        navController.previousBackStackEntry
+                                            ?.savedStateHandle
+                                            ?.set<Device?>("device", device)
+
+                                        navController.popBackStack()
                                     }
                                 },
                                 onEditClick = { editedDevice ->

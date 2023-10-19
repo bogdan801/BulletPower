@@ -96,8 +96,16 @@ fun HomeScreen(
         .collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = bullet){
-        if(bullet != null) viewModel.setBulletWeight(bullet!!.weight)
-        else viewModel.setBulletWeight(0.0)
+        if(bullet != null) {
+            viewModel.setBulletWeight(bullet!!.weight)
+            if(bullet!!.weight != screenState.bulletWeight) {
+                viewModel.clearSeries()
+            }
+        }
+        else {
+            viewModel.setBulletWeight(0.0)
+            viewModel.clearSeries()
+        }
     }
 
     Scaffold(
@@ -518,7 +526,9 @@ fun HomeScreen(
                                                 onClick = {
                                                     navController.navigate(
                                                         Screen.Graph(
-                                                            shots = screenState.shotSeries
+                                                            shots = screenState.shotSeries,
+                                                            deviceName = device?.name,
+                                                            bulletName = bullet?.name
                                                         ).routeWithArgs
                                                     )
                                                 }
