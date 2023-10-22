@@ -193,7 +193,7 @@ private class GraphDataUtil(
     val maxY = data.maxOf { it.y }
 
     private val difference = maxY - minY
-    private val yPadding = if(enableAxisPadding) (difference * 0.1).roundToInt() else 0
+    private val yPadding = if(enableAxisPadding) (difference * 0.3).roundToInt() else 0
 
     val yLowerBound = setLowerBound(floor(minY).toInt(), ceil(maxY).toInt(), yPadding)
     val yUpperBound = setUpperBound(floor(minY).toInt(), ceil(maxY).toInt(), yPadding)

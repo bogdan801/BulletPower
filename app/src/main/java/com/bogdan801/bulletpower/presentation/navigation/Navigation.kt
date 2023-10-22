@@ -6,7 +6,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-//import com.bogdan801.bulletpower.domain.model.ShotRatingItem
 import com.bogdan801.bulletpower.domain.model.toShotList
 import com.bogdan801.bulletpower.presentation.screens.bullets.BulletsScreen
 import com.bogdan801.bulletpower.presentation.screens.devices.DevicesScreen
@@ -32,26 +31,11 @@ fun Navigation(
             popEnterTransition = TransitionsUtil.enterSlideInTransition(speedOfTransition, true),
             popExitTransition = TransitionsUtil.exitSlideInTransition(speedOfTransition, true)
         ){
-            HomeScreen(navController = navController, entry = it)
-
-            /*GraphScreen(
+            //HomeScreen(navController = navController, entry = it)
+            RatingScreen(
                 navController = navController,
-                data = listOf(
-                    ShotRatingItem(speed = 119.0, energy = 3.95),
-                    ShotRatingItem(speed = 116.0, energy = 3.75),
-                    ShotRatingItem(speed = 115.0, energy = 3.55),
-                    ShotRatingItem(speed = 113.0, energy = 3.45),
-                    ShotRatingItem(speed = 116.0, energy = 3.65),
-                    ShotRatingItem(speed = 114.0, energy = 3.45),
-                    ShotRatingItem(speed = 117.0, energy = 3.35),
-                    ShotRatingItem(speed = 113.0, energy = 3.25),
-                    ShotRatingItem(speed = 112.0, energy = 3.45),
-                    ShotRatingItem(speed = 111.0, energy = 3.55),
-
-                ),
-                deviceName = "Пристрій",
-                bulletName = "Куля"
-            )*/
+                isSingleShot = false
+            )
         }
         composable(
             route = Screen.Devices().route + "/{isScreenSelector}",

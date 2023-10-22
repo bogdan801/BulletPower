@@ -41,6 +41,17 @@ class RepositoryImpl(
         bulletID: Int
     ) = dao.insertSingleShotEntity(singleShotRatingItem.toSingleShotRatingEntity(deviceID, bulletID))
 
+    override suspend fun updateSingleShotRatingItem(singleShotRatingItem: SingleShotRatingItem){
+        if(singleShotRatingItem.device!= null && singleShotRatingItem.bullet != null){
+            dao.updateSingleShotEntity(
+                singleShotRatingItem.toSingleShotRatingEntity(
+                    deviceID = singleShotRatingItem.device.deviceID,
+                    bulletID = singleShotRatingItem.bullet.bulletID
+                )
+            )
+        }
+    }
+
     override suspend fun insertMultipleShotRatingItem(
         multipleShotRatingItem: MultipleShotRatingItem,
         deviceID: Int,

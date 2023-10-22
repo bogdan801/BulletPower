@@ -2,6 +2,7 @@ package com.bogdan801.bulletpower.presentation.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bogdan801.bulletpower.data.util.calculateBulletEnergyUtil
 import com.bogdan801.bulletpower.domain.model.Bullet
 import com.bogdan801.bulletpower.domain.model.Device
 import com.bogdan801.bulletpower.domain.model.MultipleShotRatingItem
@@ -112,6 +113,5 @@ constructor(
         }
     }
 
-    private fun calculateBulletEnergy(speed: Double, mass: Double) = ((mass * (speed * speed)) / 2) * 0.001
-
+    private fun calculateBulletEnergy(speed: Double, mass: Double) = calculateBulletEnergyUtil(speed, mass)
 }

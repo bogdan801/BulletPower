@@ -31,6 +31,9 @@ interface Dao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSingleShotEntity(singleShotRatingEntity: SingleShotRatingEntity): Long
 
+    @Update
+    suspend fun updateSingleShotEntity(singleShotRatingEntity: SingleShotRatingEntity)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMultipleShotEntity(multipleShotRatingEntity: MultipleShotRatingEntity): Long
 

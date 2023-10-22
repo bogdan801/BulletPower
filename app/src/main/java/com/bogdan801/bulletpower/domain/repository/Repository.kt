@@ -13,6 +13,7 @@ interface Repository {
     suspend fun insertBullet(bullet: Bullet): Long
     suspend fun updateBullet(bullet: Bullet)
     suspend fun insertSingleShotRatingItem(singleShotRatingItem: SingleShotRatingItem, deviceID: Int, bulletID: Int): Long
+    suspend fun updateSingleShotRatingItem(singleShotRatingItem: SingleShotRatingItem)
     suspend fun insertMultipleShotRatingItem(multipleShotRatingItem: MultipleShotRatingItem, deviceID: Int, bulletID: Int): Long
     suspend fun insertShotRatingItem(shotRatingItem: ShotRatingItem): Long
 

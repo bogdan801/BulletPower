@@ -2,19 +2,158 @@ package com.bogdan801.bulletpower.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.bogdan801.bulletpower.presentation.util.Keyboard
+import com.bogdan801.bulletpower.presentation.util.difference
+import com.bogdan801.bulletpower.presentation.util.keyboardAsState
+import kotlinx.coroutines.delay
+
+@Composable
+fun ItemGridCell(
+    modifier: Modifier = Modifier,
+    itemTitle: String = "",
+    itemSubtitle1: String = "",
+    itemSubtitle2: String = "",
+    containerColor: Color = MaterialTheme.colorScheme.secondaryContainer,
+    titleColor: Color = MaterialTheme.colorScheme.onSurface,
+    subtitleColor: Color = MaterialTheme.colorScheme.onSurfaceVariant
+){
+    Box(
+        modifier = Modifier
+            .background(containerColor)
+            .then(modifier),
+        contentAlignment = Alignment.CenterStart
+    ){
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(start = 16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text(
+                text = itemTitle,
+                style = MaterialTheme.typography.titleMedium,
+                color = titleColor
+            )
+            Spacer(h = 4.dp)
+            Text(
+                text = "$itemSubtitle1 • $itemSubtitle2",
+                style = MaterialTheme.typography.labelMedium,
+                color = subtitleColor
+            )
+        }
+    }
+}
+
+@Composable
+fun NumberEditGridCell(
+    modifier: Modifier,
+    value: String,
+    onNumberChange: (newNumber: String) -> Unit,
+    onDone: () -> Unit,
+    textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
+    textColor: Color = MaterialTheme.colorScheme.onSurface,
+    containerColor: Color = MaterialTheme.colorScheme.primaryContainer
+) {
+    val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
+    LaunchedEffect(key1 = true){
+        delay(300)
+        focusRequester.requestFocus()
+    }
+    val keyboardState by keyboardAsState()
+    LaunchedEffect(key1 = keyboardState){
+        delay(500)
+        if(keyboardState == Keyboard.Closed){
+            focusManager.clearFocus()
+            onDone()
+        }
+    }
+    Box(
+        modifier = Modifier
+            .background(containerColor)
+            .then(modifier),
+        contentAlignment = Alignment.Center
+    ){
+        BasicTextField(
+            modifier = Modifier.focusRequester(focusRequester),
+            value = TextFieldValue(
+                text = value,
+                selection = TextRange(value.length)
+            ),
+            onValueChange = { newString ->
+                if(newString.text.length <= 8){
+                    if(newString.text.length > value.length){
+                        val difference = value.difference(newString.text).last()
+                        if(difference.isDigit()){
+                            onNumberChange(newString.text)
+                        }
+                        else if(difference == '.'){
+                            if(!value.contains(".") && value.isNotBlank()) {
+                                onNumberChange(newString.text)
+                            }
+                        }
+                    }
+                    else {
+                        onNumberChange(newString.text)
+                    }
+                }
+            },
+            textStyle = textStyle.copy(
+                color = textColor,
+                textAlign = TextAlign.Center
+            ),
+            maxLines = 1,
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Decimal,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                    onDone()
+                }
+            ),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary)
+        )
+    }
+}
 
 @Composable
 fun TextGridCell(
