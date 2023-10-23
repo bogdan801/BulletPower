@@ -17,6 +17,11 @@ sealed class Screen(val route: String = "", val routeWithArgs: String = ""){
                         "/${deviceName ?: "-"}" +
                         "/${bulletName ?: "-"}"
     )
-    object Rating: Screen(route = "rating", routeWithArgs = "rating")
-    object Settings: Screen(route = "settings", routeWithArgs = "settings")
+    data class Rating(
+        val isSingleShot: Boolean = true
+    ): Screen(
+        route = "rating",
+        routeWithArgs = "rating/${if(isSingleShot) 1 else 0}"
+    )
+    object Menu: Screen(route = "menu", routeWithArgs = "menu")
 }

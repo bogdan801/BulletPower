@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class RepositoryImpl(
-    private val applicationContext: Context,
     private val dao: Dao
 ) : Repository {
     override suspend fun insertDevice(device: Device): Long =
@@ -41,15 +40,20 @@ class RepositoryImpl(
         bulletID: Int
     ) = dao.insertSingleShotEntity(singleShotRatingItem.toSingleShotRatingEntity(deviceID, bulletID))
 
-    override suspend fun updateSingleShotRatingItem(singleShotRatingItem: SingleShotRatingItem){
-        if(singleShotRatingItem.device!= null && singleShotRatingItem.bullet != null){
-            dao.updateSingleShotEntity(
-                singleShotRatingItem.toSingleShotRatingEntity(
-                    deviceID = singleShotRatingItem.device.deviceID,
-                    bulletID = singleShotRatingItem.bullet.bulletID
+    override suspend fun updateSingleShotRatingItem(
+        singleShotRatingItem: SingleShotRatingItem,
+        deviceID: Int,
+        bulletID: Int
+    ){
+        val id = isSingleShotItemPresent(singleShotRatingItem)
+        dao.updateSingleShotEntity(
+            singleShotRatingItem
+                .copy(singleShotID = if(id != -1) id else 0)
+                .toSingleShotRatingEntity(
+                    deviceID = deviceID,
+                    bulletID = bulletID
                 )
-            )
-        }
+        )
     }
 
     override suspend fun insertMultipleShotRatingItem(
@@ -57,6 +61,9 @@ class RepositoryImpl(
         deviceID: Int,
         bulletID: Int
     ): Long {
+        val prevID = isMultipleShotItemPresent(multipleShotRatingItem)
+        if(prevID != -1) deleteMultipleShotRatingItem(prevID)
+
         val id = dao.insertMultipleShotEntity(multipleShotRatingItem.toMultipleShotRatingEntity(deviceID, bulletID))
         multipleShotRatingItem.shots.forEach { shotRatingItem ->
             insertShotRatingItem(shotRatingItem.copy(multipleShotID = id.toInt()))
@@ -220,5 +227,11 @@ class RepositoryImpl(
         val rating = getSingleShotRating().first()
         val found = rating.find { it.bullet == shot.bullet && it.device == shot.device }
         return found?.singleShotID ?: -1
+    }
+
+    override suspend fun isMultipleShotItemPresent(shot: MultipleShotRatingItem): Int {
+        val rating = getMultipleShotRating().first()
+        val found = rating.find { it.bullet == shot.bullet && it.device == shot.device }
+        return found?.multipleShotID ?: -1
     }
 }

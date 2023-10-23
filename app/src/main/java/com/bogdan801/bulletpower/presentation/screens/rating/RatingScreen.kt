@@ -1,7 +1,6 @@
 package com.bogdan801.bulletpower.presentation.screens.rating
 
 import android.content.pm.ActivityInfo
-import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -42,6 +40,7 @@ import com.bogdan801.bulletpower.presentation.components.SortBy
 import com.bogdan801.bulletpower.presentation.components.SortBySelector
 import com.bogdan801.bulletpower.presentation.components.Spacer
 import com.bogdan801.bulletpower.presentation.components.TitleRatingCard
+import com.bogdan801.bulletpower.presentation.navigation.Screen
 import com.bogdan801.bulletpower.presentation.util.LockScreenOrientation
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -49,7 +48,7 @@ import com.bogdan801.bulletpower.presentation.util.LockScreenOrientation
 fun RatingScreen(
     navController: NavController,
     viewModel: RatingViewModel = hiltViewModel(),
-    isSingleShot: Boolean = true
+    //isSingleShot: Boolean = true
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
@@ -70,7 +69,7 @@ fun RatingScreen(
             ),
     ) {
         CustomTopAppBar(
-            title = if(isSingleShot) "Одиночний рейтинг" else "Рейтинг серій",
+            title = if(screenState.isSingleShot) "Одиночний рейтинг" else "Рейтинг серій",
             isVertical = true,
             backButton = {
                 IconButton(
@@ -125,7 +124,7 @@ fun RatingScreen(
                 )
             }
             Spacer(h = 1.dp)
-            if(isSingleShot){
+            if(screenState.isSingleShot){
                 if(screenState.searchQuery.isBlank()){
                     if(screenState.singleShotList.isNotEmpty()){
                         LazyColumn(
@@ -197,11 +196,10 @@ fun RatingScreen(
                                     number = index + 1,
                                     item = item,
                                     onDeleteItemClick = {
-                                        viewModel.deleteSingleShotRating(it)
-
+                                        viewModel.deleteSingleShotRating(it, doSearch = true)
                                     },
                                     onEditItem = {
-                                        viewModel.editSingleShotRating(it)
+                                        viewModel.editSingleShotRating(it, doSearch = true)
                                     }
                                 )
                             }
@@ -247,11 +245,27 @@ fun RatingScreen(
                                         .animateItemPlacement(),
                                     item = item,
                                     number = index + 1,
+                                    isExpanded = screenState.expandedMutableShotCards[item.multipleShotID] ?: false,
+                                    onExpandToggle = {
+                                        viewModel.toggleMultipleShotCard(item.multipleShotID)
+                                    },
                                     onDeleteItemClick = {
-
+                                        viewModel.deleteMultipleShotRating(it)
                                     },
                                     onDrawGraphClick = {
-
+                                        navController.navigate(
+                                            Screen.Graph(
+                                                shots = item.shots,
+                                                deviceName = item.device?.name,
+                                                bulletName = item.bullet?.name
+                                            ).routeWithArgs
+                                        )
+                                    },
+                                    onDeleteSubItemClick = {
+                                        viewModel.deleteShotFromMultipleShotRating(it)
+                                    },
+                                    onEditSubItemClick = {
+                                        viewModel.editShotFromMultipleShotRating(it)
                                     }
                                 )
                             }
@@ -295,11 +309,27 @@ fun RatingScreen(
                                         .animateItemPlacement(),
                                     item = item,
                                     number = index + 1,
+                                    isExpanded = screenState.expandedMutableShotCards[item.multipleShotID] ?: false,
+                                    onExpandToggle = {
+                                        viewModel.toggleMultipleShotCard(item.multipleShotID)
+                                    },
                                     onDeleteItemClick = {
-
+                                        viewModel.deleteMultipleShotRating(it, doSearch = true)
                                     },
                                     onDrawGraphClick = {
-
+                                        navController.navigate(
+                                            Screen.Graph(
+                                                shots = item.shots,
+                                                deviceName = item.device?.name,
+                                                bulletName = item.bullet?.name
+                                            ).routeWithArgs
+                                        )
+                                    },
+                                    onDeleteSubItemClick = {
+                                        viewModel.deleteShotFromMultipleShotRating(it, doSearch = true)
+                                    },
+                                    onEditSubItemClick = {
+                                        viewModel.editShotFromMultipleShotRating(it, doSearch = true)
                                     }
                                 )
                             }

@@ -13,5 +13,6 @@ data class RatingScreenState(
     val singleShotList: List<SingleShotRatingItem> = listOf(),
     val multipleShotList: List<MultipleShotRatingItem> = listOf(),
     val foundSingleShots: List<SingleShotRatingItem> = listOf(),
-    val foundMultipleShots: List<MultipleShotRatingItem> = listOf()
+    val foundMultipleShots: List<MultipleShotRatingItem> = listOf(),
+    val expandedMutableShotCards: Map<Int, Boolean> = mapOf()
 )

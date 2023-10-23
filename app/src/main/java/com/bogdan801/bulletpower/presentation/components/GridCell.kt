@@ -18,13 +18,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -93,12 +89,12 @@ fun NumberEditGridCell(
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(key1 = true){
-        delay(300)
+        delay(100)
         focusRequester.requestFocus()
     }
     val keyboardState by keyboardAsState()
     LaunchedEffect(key1 = keyboardState){
-        delay(500)
+        delay(700)
         if(keyboardState == Keyboard.Closed){
             focusManager.clearFocus()
             onDone()

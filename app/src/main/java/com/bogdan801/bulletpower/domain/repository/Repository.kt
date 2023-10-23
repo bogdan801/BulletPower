@@ -13,7 +13,7 @@ interface Repository {
     suspend fun insertBullet(bullet: Bullet): Long
     suspend fun updateBullet(bullet: Bullet)
     suspend fun insertSingleShotRatingItem(singleShotRatingItem: SingleShotRatingItem, deviceID: Int, bulletID: Int): Long
-    suspend fun updateSingleShotRatingItem(singleShotRatingItem: SingleShotRatingItem)
+    suspend fun updateSingleShotRatingItem(singleShotRatingItem: SingleShotRatingItem, deviceID: Int, bulletID: Int)
     suspend fun insertMultipleShotRatingItem(multipleShotRatingItem: MultipleShotRatingItem, deviceID: Int, bulletID: Int): Long
     suspend fun insertShotRatingItem(shotRatingItem: ShotRatingItem): Long
 
@@ -34,4 +34,5 @@ interface Repository {
     fun searchMultipleShotRating(searchQuery: String, listToSearch: List<MultipleShotRatingItem>): List<MultipleShotRatingItem>
 
     suspend fun isSingleShotItemPresent(shot: SingleShotRatingItem): Int
+    suspend fun isMultipleShotItemPresent(shot: MultipleShotRatingItem): Int
 }

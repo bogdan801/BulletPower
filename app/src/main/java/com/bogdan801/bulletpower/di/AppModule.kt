@@ -49,7 +49,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRepository(@ApplicationContext app: Context, localDB: Database): Repository {
-        return RepositoryImpl(app, localDB.dbDao)
+    fun provideRepository(localDB: Database): Repository {
+        return RepositoryImpl(localDB.dbDao)
     }
 }

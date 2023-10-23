@@ -37,6 +37,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -54,8 +55,11 @@ import androidx.navigation.NavController
 import com.bogdan801.bulletpower.R
 import com.bogdan801.bulletpower.domain.model.Bullet
 import com.bogdan801.bulletpower.domain.model.Device
+import com.bogdan801.bulletpower.domain.model.MultipleShotRatingItem
 import com.bogdan801.bulletpower.domain.model.ShotRatingItem
+import com.bogdan801.bulletpower.domain.model.SingleShotRatingItem
 import com.bogdan801.bulletpower.presentation.components.ButtonGridCell
+import com.bogdan801.bulletpower.presentation.components.ConfirmationDialog
 import com.bogdan801.bulletpower.presentation.components.CustomTopAppBar
 import com.bogdan801.bulletpower.presentation.components.DigitDisplay
 import com.bogdan801.bulletpower.presentation.components.DisplayGridCell
@@ -126,7 +130,7 @@ fun HomeScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            navController.navigate(Screen.Settings.route)
+                            navController.navigate(Screen.Menu.route)
                         }
                     ) {
                         Icon(
@@ -306,6 +310,7 @@ fun HomeScreen(
                                     .weight(1f)
                             )
                             if(device != null && bullet != null && screenState.singleShotSpeed != 0.0) {
+                                var showWarningDialog by rememberSaveable { mutableStateOf(false) }
                                 ButtonGridCell(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -317,7 +322,45 @@ fun HomeScreen(
                                             contentDescription = ""
                                         )
                                     },
-                                    onClick = {}
+                                    onClick = {
+                                        val shotToAdd = SingleShotRatingItem(
+                                            device = device,
+                                            bullet = bullet,
+                                            speed = screenState.singleShotSpeed,
+                                            energy = screenState.singleShotEnergy
+                                        )
+                                        if(viewModel.isSingleShotItemPresent(shotToAdd)) {
+                                            showWarningDialog = true
+                                        }
+                                        else{
+                                            viewModel.addSingleShotToRating(shotToAdd, device!!, bullet!!)
+                                            navController.navigate(
+                                                Screen.Rating(isSingleShot = true).routeWithArgs
+                                            )
+                                        }
+                                    }
+                                )
+                                ConfirmationDialog(
+                                    showDialog = showWarningDialog,
+                                    onDismiss = {
+                                        showWarningDialog = false
+                                    },
+                                    title = "Перезаписати?",
+                                    subtitle = "Запис для цього пристрою та кулі вже існує. Бажаєте перезаписати?",
+                                    confirmButtonText = "Перезаписати",
+                                    onConfirm = {
+                                        val shotToAdd = SingleShotRatingItem(
+                                            device = device,
+                                            bullet = bullet,
+                                            speed = screenState.singleShotSpeed,
+                                            energy = screenState.singleShotEnergy
+                                        )
+                                        showWarningDialog = false
+                                        viewModel.addSingleShotToRating(shotToAdd, device!!, bullet!!, isUpdate = true)
+                                        navController.navigate(
+                                            Screen.Rating(isSingleShot = true).routeWithArgs
+                                        )
+                                    }
                                 )
                             }
                         }
@@ -534,6 +577,7 @@ fun HomeScreen(
                                                 }
                                             )
                                             if(device != null && bullet != null){
+                                                var showWarningDialog by rememberSaveable { mutableStateOf(false) }
                                                 Spacer(w = 1.dp)
                                                 ButtonGridCell(
                                                     modifier = Modifier
@@ -549,7 +593,52 @@ fun HomeScreen(
                                                         )
                                                     },
                                                     onClick = {
+                                                        val shotsToAdd = MultipleShotRatingItem(
+                                                            device = device,
+                                                            bullet = bullet,
+                                                            shots = screenState.shotSeries
+                                                        )
 
+                                                        if(viewModel.isMultipleShotItemPresent(shotsToAdd)){
+                                                            showWarningDialog = true
+                                                        }
+                                                        else {
+                                                            viewModel.addSeriesToRating(
+                                                                shotsToAdd,
+                                                                device!!,
+                                                                bullet!!
+                                                            )
+                                                            navController.navigate(
+                                                                Screen.Rating(isSingleShot = false).routeWithArgs
+                                                            )
+                                                        }
+
+                                                    }
+                                                )
+                                                ConfirmationDialog(
+                                                    showDialog = showWarningDialog,
+                                                    onDismiss = {
+                                                        showWarningDialog = false
+                                                    },
+                                                    title = "Перезаписати?",
+                                                    subtitle = "Запис для цього пристрою та кулі вже існує." +
+                                                               " Бажаєте перезаписати?",
+                                                    confirmButtonText = "Перезаписати",
+                                                    onConfirm = {
+                                                        showWarningDialog = false
+                                                        val shotsToAdd = MultipleShotRatingItem(
+                                                            device = device,
+                                                            bullet = bullet,
+                                                            shots = screenState.shotSeries
+                                                        )
+                                                        viewModel.addSeriesToRating(
+                                                            shotsToAdd,
+                                                            device!!,
+                                                            bullet!!
+                                                        )
+                                                        navController.navigate(
+                                                            Screen.Rating(isSingleShot = false).routeWithArgs
+                                                        )
                                                     }
                                                 )
                                             }

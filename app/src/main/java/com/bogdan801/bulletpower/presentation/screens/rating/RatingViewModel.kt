@@ -3,8 +3,6 @@ package com.bogdan801.bulletpower.presentation.screens.rating
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bogdan801.bulletpower.domain.model.Bullet
-import com.bogdan801.bulletpower.domain.model.Device
 import com.bogdan801.bulletpower.domain.model.MultipleShotRatingItem
 import com.bogdan801.bulletpower.domain.model.ShotRatingItem
 import com.bogdan801.bulletpower.domain.model.SingleShotRatingItem
@@ -12,6 +10,7 @@ import com.bogdan801.bulletpower.domain.repository.Repository
 import com.bogdan801.bulletpower.presentation.components.SortBy
 import com.bogdan801.bulletpower.presentation.components.SortOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -28,7 +27,17 @@ constructor(
     private val _screenState = MutableStateFlow(RatingScreenState())
     val screenState = _screenState.asStateFlow()
 
-    fun doSearch(searchQuery: String) {
+    //type of screen content
+    private fun setIsSingleShot(isSingleShot: Boolean){
+        _screenState.update {
+            it.copy(
+                isSingleShot = isSingleShot
+            )
+        }
+    }
+
+    //search
+    fun doSearch(searchQuery: String = _screenState.value.searchQuery) {
         _screenState.update {
             it.copy(
                 searchQuery = searchQuery
@@ -60,6 +69,7 @@ constructor(
 
     }
 
+    //sorting
     private fun sortSingleShotList(list: List<SingleShotRatingItem>) = when(_screenState.value.sortOrder){
         SortOrder.Ascending -> {
             when(_screenState.value.sortBy){
@@ -110,23 +120,14 @@ constructor(
         }
     }
 
-    private fun setIsSingleShot(isSingleShot: Boolean){
-        _screenState.update {
-            it.copy(
-                isSingleShot = isSingleShot
-            )
-        }
-    }
-
     fun setSortOrder(order: SortOrder){
         _screenState.update {
             it.copy(
                 sortOrder = order
             )
         }
-        if(_screenState.value.isSingleShot){
-            setSingleShotRatingList()
-        }
+        if(_screenState.value.isSingleShot) setSingleShotRatingList()
+        else setMultipleShotRatingList()
     }
 
     fun setSortBy(sortBy: SortBy){
@@ -135,11 +136,11 @@ constructor(
                 sortBy = sortBy
             )
         }
-        if(_screenState.value.isSingleShot){
-            setSingleShotRatingList()
-        }
+        if(_screenState.value.isSingleShot) setSingleShotRatingList()
+        else setMultipleShotRatingList()
     }
 
+    //data operations
     private fun setSingleShotRatingList(
         rating: List<SingleShotRatingItem> = _screenState.value.singleShotList
     ){
@@ -160,104 +161,95 @@ constructor(
         }
     }
 
-    fun deleteSingleShotRating(id: Int){
+    fun deleteSingleShotRating(id: Int, doSearch: Boolean = false){
         viewModelScope.launch {
             repository.deleteSingleShotRatingItem(id)
+            if(doSearch) {
+                delay(100)
+                doSearch()
+            }
         }
     }
 
-    fun editSingleShotRating(singleShotRatingItem: SingleShotRatingItem){
+    fun editSingleShotRating(singleShotRatingItem: SingleShotRatingItem, doSearch: Boolean = false){
         viewModelScope.launch {
-            repository.updateSingleShotRatingItem(singleShotRatingItem)
+            repository.updateSingleShotRatingItem(
+                singleShotRatingItem,
+                singleShotRatingItem.device!!.deviceID,
+                singleShotRatingItem.bullet!!.bulletID
+            )
+            if(doSearch) {
+                delay(100)
+                doSearch()
+            }
+        }
+    }
+
+    fun deleteMultipleShotRating(id: Int, doSearch: Boolean = false){
+        viewModelScope.launch {
+            repository.deleteMultipleShotRatingItem(id)
+            if(doSearch) {
+                delay(100)
+                doSearch()
+            }
+        }
+    }
+
+    fun deleteShotFromMultipleShotRating(shotID: Int, doSearch: Boolean = false){
+        viewModelScope.launch {
+            repository.deleteShotRatingItem(shotID)
+            if(doSearch) {
+                delay(100)
+                doSearch()
+            }
+        }
+    }
+
+    fun editShotFromMultipleShotRating(editedShot: ShotRatingItem, doSearch: Boolean = false){
+        viewModelScope.launch {
+            repository.insertShotRatingItem(editedShot)
+            if(doSearch) {
+                delay(100)
+                doSearch()
+            }
+        }
+    }
+
+    //ui related
+    fun toggleMultipleShotCard(multipleShotID: Int){
+        val isExpanded = _screenState.value.expandedMutableShotCards[multipleShotID] ?: false
+        val isAnyExpanded = _screenState.value.expandedMutableShotCards.values.contains(true)
+        collapseAllCards()
+        if(!isExpanded) {
+            viewModelScope.launch {
+                if(isAnyExpanded) delay(200)
+                expandCard(multipleShotID)
+            }
+        }
+    }
+
+    private fun expandCard(id: Int) {
+        _screenState.update {
+            it.copy(
+                expandedMutableShotCards = _screenState.value.expandedMutableShotCards
+                    .toMutableMap()
+                    .apply {
+                        set(id, true)
+                    }
+            )
+        }
+    }
+
+    private fun collapseAllCards() {
+        _screenState.update {
+            it.copy(
+                expandedMutableShotCards = mapOf()
+            )
         }
     }
 
     init {
-        handle["isSingleShot"] = 0
         setIsSingleShot(handle.get<Int>("isSingleShot") == 1)
-
-        /*viewModelScope.launch {
-            repository.insertMultipleShotRatingItem(
-                multipleShotRatingItem = MultipleShotRatingItem(
-                    device = null,
-                    bullet = null,
-                    averageSpeed = 119.0,
-                    averageEnergy = 3.84,
-                    shots = listOf(
-                        ShotRatingItem(
-                            speed = 119.0,
-                            energy = 3.84
-                        ),
-                        ShotRatingItem(
-                            speed = 118.0,
-                            energy = 3.80
-                        ),
-                        ShotRatingItem(
-                            speed = 120.0,
-                            energy = 3.88
-                        ),
-                        ShotRatingItem(
-                            speed = 116.0,
-                            energy = 3.74
-                        ),
-                        ShotRatingItem(
-                            speed = 121.0,
-                            energy = 3.94
-                        ),
-                        ShotRatingItem(
-                            speed = 115.0,
-                            energy = 3.64
-                        ),
-                        ShotRatingItem(
-                            speed = 122.0,
-                            energy = 4.04
-                        ),
-                    )
-                ),
-                deviceID = 14,
-                bulletID = 3
-            )
-            repository.insertMultipleShotRatingItem(
-                multipleShotRatingItem = MultipleShotRatingItem(
-                    device = null,
-                    bullet = null,
-                    averageSpeed = 115.0,
-                    averageEnergy = 3.24,
-                    shots = listOf(
-                        ShotRatingItem(
-                            speed = 115.0,
-                            energy = 3.24
-                        ),
-                        ShotRatingItem(
-                            speed = 116.0,
-                            energy = 3.84
-                        ),
-                        ShotRatingItem(
-                            speed = 114.0,
-                            energy = 3.80
-                        ),
-                        ShotRatingItem(
-                            speed = 117.0,
-                            energy = 3.88
-                        ),
-                        ShotRatingItem(
-                            speed = 113.0,
-                            energy = 3.74
-                        ),
-                        ShotRatingItem(
-                            speed = 118.0,
-                            energy = 3.94
-                        ),
-                        ShotRatingItem(
-                            speed = 112.0,
-                            energy = 3.64
-                        )
-                    )
-                ),
-                deviceID = 15,
-                bulletID = 4
-            )
-        }*/
 
         viewModelScope.launch {
             if(handle.get<Int>("isSingleShot") == 1){

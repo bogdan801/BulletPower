@@ -1,4 +1,4 @@
-package com.bogdan801.bulletpower.presentation.screens.settings
+package com.bogdan801.bulletpower.presentation.screens.menu
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -9,12 +9,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class SettingsViewModel
+class MenuViewModel
 @Inject
 constructor(
     private val repository: Repository,
     handle: SavedStateHandle
 ): ViewModel()  {
-    private val _screenState = MutableStateFlow(SettingsScreenState())
+    private val _screenState = MutableStateFlow(MenuScreenState())
     val screenState = _screenState.asStateFlow()
 }

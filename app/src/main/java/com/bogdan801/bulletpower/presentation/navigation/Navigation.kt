@@ -12,7 +12,7 @@ import com.bogdan801.bulletpower.presentation.screens.devices.DevicesScreen
 import com.bogdan801.bulletpower.presentation.screens.graph.GraphScreen
 import com.bogdan801.bulletpower.presentation.screens.home.HomeScreen
 import com.bogdan801.bulletpower.presentation.screens.rating.RatingScreen
-import com.bogdan801.bulletpower.presentation.screens.settings.SettingsScreen
+import com.bogdan801.bulletpower.presentation.screens.menu.MenuScreen
 
 @Composable
 fun Navigation(
@@ -31,16 +31,13 @@ fun Navigation(
             popEnterTransition = TransitionsUtil.enterSlideInTransition(speedOfTransition, true),
             popExitTransition = TransitionsUtil.exitSlideInTransition(speedOfTransition, true)
         ){
-            //HomeScreen(navController = navController, entry = it)
-            RatingScreen(
-                navController = navController,
-                isSingleShot = false
-            )
+            HomeScreen(navController = navController, entry = it)
         }
         composable(
             route = Screen.Devices().route + "/{isScreenSelector}",
             enterTransition = TransitionsUtil.enterSlideInTransition(speedOfTransition),
             exitTransition = TransitionsUtil.exitSlideInTransition(speedOfTransition),
+            popEnterTransition = TransitionsUtil.enterSlideInTransition(speedOfTransition, true),
             popExitTransition = TransitionsUtil.exitSlideInTransition(speedOfTransition, true),
             arguments = listOf(
                 navArgument("isScreenSelector"){
@@ -57,6 +54,7 @@ fun Navigation(
             route = Screen.Bullets().route + "/{isScreenSelector}",
             enterTransition = TransitionsUtil.enterSlideInTransition(speedOfTransition),
             exitTransition = TransitionsUtil.exitSlideInTransition(speedOfTransition),
+            popEnterTransition = TransitionsUtil.enterSlideInTransition(speedOfTransition, true),
             popExitTransition = TransitionsUtil.exitSlideInTransition(speedOfTransition, true),
             arguments = listOf(
                 navArgument("isScreenSelector"){
@@ -70,25 +68,24 @@ fun Navigation(
             )
         }
         composable(
-            route = Screen.Rating.route + "/{isSingleShot}",
+            route = Screen.Rating().route + "/{isSingleShot}",
             enterTransition = TransitionsUtil.enterSlideInTransition(speedOfTransition),
             exitTransition = TransitionsUtil.exitSlideInTransition(speedOfTransition),
+            popEnterTransition = TransitionsUtil.enterSlideInTransition(speedOfTransition, true),
             popExitTransition = TransitionsUtil.exitSlideInTransition(speedOfTransition, true),
             arguments = listOf(
                 navArgument("isSingleShot"){
                     type = NavType.IntType
                 }
             )
-        ){ entry ->
-            RatingScreen(
-                navController = navController,
-                isSingleShot = entry.arguments!!.getInt("isSingleShot") == 1
-            )
+        ){
+            RatingScreen(navController = navController)
         }
         composable(
             route = Screen.Graph().route + "/{shots}/{deviceName}/{bulletName}",
             enterTransition = TransitionsUtil.enterSlideInTransition(speedOfTransition),
             exitTransition = TransitionsUtil.exitSlideInTransition(speedOfTransition),
+            popEnterTransition = TransitionsUtil.enterSlideInTransition(speedOfTransition, true),
             popExitTransition = TransitionsUtil.exitSlideInTransition(speedOfTransition, true),
             arguments = listOf(
                 navArgument("shots"){
@@ -114,12 +111,13 @@ fun Navigation(
             )
         }
         composable(
-            route = Screen.Settings.route,
+            route = Screen.Menu.route,
             enterTransition = TransitionsUtil.enterSlideInTransition(speedOfTransition),
             exitTransition = TransitionsUtil.exitSlideInTransition(speedOfTransition),
+            popEnterTransition = TransitionsUtil.enterSlideInTransition(speedOfTransition, true),
             popExitTransition = TransitionsUtil.exitSlideInTransition(speedOfTransition, true)
         ){
-            SettingsScreen(navController = navController)
+            MenuScreen(navController = navController)
         }
     }
 }

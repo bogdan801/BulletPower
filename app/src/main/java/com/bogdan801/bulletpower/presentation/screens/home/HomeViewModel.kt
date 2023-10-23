@@ -84,7 +84,6 @@ constructor(
         }
     }
 
-
     fun isSingleShotItemPresent(shot: SingleShotRatingItem) : Boolean {
         var result: Boolean
         runBlocking {
@@ -93,13 +92,30 @@ constructor(
         return result
     }
 
-    fun addSingleShotToRating(shot: SingleShotRatingItem, device: Device, bullet: Bullet){
+    fun isMultipleShotItemPresent(shot: MultipleShotRatingItem) : Boolean {
+        var result: Boolean
+        runBlocking {
+            result = repository.isMultipleShotItemPresent(shot) != -1
+        }
+        return result
+    }
+
+    fun addSingleShotToRating(shot: SingleShotRatingItem, device: Device, bullet: Bullet, isUpdate: Boolean = false){
         viewModelScope.launch {
-            repository.insertSingleShotRatingItem(
-                singleShotRatingItem = shot,
-                deviceID = device.deviceID,
-                bulletID = bullet.bulletID
-            )
+            if(!isUpdate){
+                repository.insertSingleShotRatingItem(
+                    singleShotRatingItem = shot,
+                    deviceID = device.deviceID,
+                    bulletID = bullet.bulletID
+                )
+            }
+            else {
+                repository.updateSingleShotRatingItem(
+                    singleShotRatingItem = shot,
+                    deviceID = device.deviceID,
+                    bulletID = bullet.bulletID
+                )
+            }
         }
     }
 
