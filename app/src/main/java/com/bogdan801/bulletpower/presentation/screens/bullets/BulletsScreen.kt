@@ -93,7 +93,7 @@ fun BulletsScreen(
                         if(selectedBullet != null){
                             val found = screenState.items.find { it.bulletID == selectedBullet.bulletID }
                             if(found != null){
-                                if(found.caliber == selectedBullet.caliber){
+                                if(found.caliber in (selectedBullet.caliber-0.05)..(selectedBullet.caliber+0.05)){
                                     navController.previousBackStackEntry
                                         ?.savedStateHandle
                                         ?.set<Bullet?>("bullet", found)
@@ -214,7 +214,10 @@ fun BulletsScreen(
                                 bullet = bullet,
                                 onClick = {
                                     if (isScreenSelector){
-                                        if(selectedDevice != null && bullet.caliber != selectedDevice.caliber){
+                                        if(
+                                            selectedDevice != null &&
+                                            bullet.caliber !in (selectedDevice.caliber-0.05)..(selectedDevice.caliber+0.05)
+                                        ){
                                             Toast.makeText(
                                                 context,
                                                 "Куля з даним колібром не сумісна з обраним пристроєм",
@@ -233,7 +236,10 @@ fun BulletsScreen(
                                 onEditClick = { editedBullet ->
                                     viewModel.editBullet(editedBullet)
                                     if(selectedBullet != null && selectedBullet.bulletID == editedBullet.bulletID){
-                                        if(selectedBullet.caliber != editedBullet.caliber){
+                                        if(
+                                            selectedBullet.caliber !in
+                                            (editedBullet.caliber-0.05)..(editedBullet.caliber+0.05)
+                                        ){
                                             navController.previousBackStackEntry
                                                 ?.savedStateHandle
                                                 ?.remove<Bullet?>("bullet")
@@ -269,7 +275,10 @@ fun BulletsScreen(
                                 bullet = bullet,
                                 onClick = {
                                     if (isScreenSelector){
-                                        if(selectedDevice != null && bullet.caliber != selectedDevice.caliber){
+                                        if(
+                                            selectedDevice != null &&
+                                            bullet.caliber !in (selectedDevice.caliber-0.05)..(selectedDevice.caliber+0.05)
+                                        ){
                                             Toast.makeText(
                                                 context,
                                                 "Куля з даним колібром не сумісна з обраним пристроєм",
@@ -290,7 +299,10 @@ fun BulletsScreen(
                                     viewModel.clearFound()
                                     viewModel.doSearch(screenState.searchQuery)
                                     if(selectedBullet != null && selectedBullet.bulletID == editedBullet.bulletID){
-                                        if(selectedBullet.caliber != editedBullet.caliber){
+                                        if(
+                                            selectedBullet.caliber !in
+                                            (editedBullet.caliber-0.05)..(editedBullet.caliber+0.05)
+                                        ){
                                             navController.previousBackStackEntry
                                                 ?.savedStateHandle
                                                 ?.remove<Bullet?>("bullet")

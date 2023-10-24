@@ -75,9 +75,10 @@ constructor(
             when(_screenState.value.sortBy){
                 SortBy.DeviceName -> list.sortedBy { it.device?.name }
                 SortBy.DeviceType -> list.sortedBy { it.device?.type }
+                SortBy.DeviceCaliber -> list.sortedBy { it.device?.caliber }
                 SortBy.BulletName -> list.sortedBy { it.bullet?.name }
                 SortBy.BulletWeight -> list.sortedBy { it.bullet?.weight }
-                SortBy.Caliber -> list.sortedBy { it.device?.caliber }
+                SortBy.BulletCaliber -> list.sortedBy { it.bullet?.caliber }
                 SortBy.Speed -> list.sortedBy { it.speed }
                 SortBy.Energy -> list.sortedBy { it.energy }
             }
@@ -86,9 +87,10 @@ constructor(
             when(_screenState.value.sortBy){
                 SortBy.DeviceName -> list.sortedByDescending { it.device?.name }
                 SortBy.DeviceType -> list.sortedByDescending { it.device?.type }
+                SortBy.DeviceCaliber -> list.sortedByDescending { it.device?.caliber }
                 SortBy.BulletName -> list.sortedByDescending { it.bullet?.name }
                 SortBy.BulletWeight -> list.sortedByDescending { it.bullet?.weight }
-                SortBy.Caliber -> list.sortedByDescending { it.device?.caliber }
+                SortBy.BulletCaliber -> list.sortedByDescending { it.bullet?.caliber }
                 SortBy.Speed -> list.sortedByDescending { it.speed }
                 SortBy.Energy -> list.sortedByDescending { it.energy }
             }
@@ -100,9 +102,10 @@ constructor(
             when(_screenState.value.sortBy){
                 SortBy.DeviceName -> list.sortedBy { it.device?.name }
                 SortBy.DeviceType -> list.sortedBy { it.device?.type }
+                SortBy.DeviceCaliber -> list.sortedBy { it.device?.caliber }
                 SortBy.BulletName -> list.sortedBy { it.bullet?.name }
                 SortBy.BulletWeight -> list.sortedBy { it.bullet?.weight }
-                SortBy.Caliber -> list.sortedBy { it.device?.caliber }
+                SortBy.BulletCaliber -> list.sortedBy { it.bullet?.caliber }
                 SortBy.Speed -> list.sortedBy { it.averageSpeed }
                 SortBy.Energy -> list.sortedBy { it.averageEnergy }
             }
@@ -111,9 +114,10 @@ constructor(
             when(_screenState.value.sortBy){
                 SortBy.DeviceName -> list.sortedByDescending { it.device?.name }
                 SortBy.DeviceType -> list.sortedByDescending { it.device?.type }
+                SortBy.DeviceCaliber -> list.sortedByDescending { it.device?.caliber }
                 SortBy.BulletName -> list.sortedByDescending { it.bullet?.name }
                 SortBy.BulletWeight -> list.sortedByDescending { it.bullet?.weight }
-                SortBy.Caliber -> list.sortedByDescending { it.device?.caliber }
+                SortBy.BulletCaliber -> list.sortedByDescending { it.bullet?.caliber }
                 SortBy.Speed -> list.sortedByDescending { it.averageSpeed }
                 SortBy.Energy -> list.sortedByDescending { it.averageEnergy }
             }

@@ -90,7 +90,7 @@ fun DevicesScreen(
                         if(selectedDevice != null){
                             val found = screenState.items.find { it.deviceID == selectedDevice.deviceID }
                             if(found != null){
-                                if(found.caliber == selectedDevice.caliber){
+                                if(found.caliber in (selectedDevice.caliber-0.05)..(selectedDevice.caliber+0.05)){
                                     navController.previousBackStackEntry
                                         ?.savedStateHandle
                                         ?.set<Device?>("device", found)
@@ -211,7 +211,10 @@ fun DevicesScreen(
                                 device = device,
                                 onClick = {
                                     if (isScreenSelector){
-                                        if(selectedBullet != null && device.caliber != selectedBullet.caliber){
+                                        if(
+                                            selectedBullet != null &&
+                                            device.caliber !in (selectedBullet.caliber-0.05)..(selectedBullet.caliber+0.05)
+                                        ){
                                             navController.previousBackStackEntry
                                                 ?.savedStateHandle
                                                 ?.remove<Bullet?>("bullet")
@@ -226,7 +229,10 @@ fun DevicesScreen(
                                 onEditClick = { editedDevice ->
                                     viewModel.editDevice(editedDevice)
                                     if(selectedDevice != null && selectedDevice.deviceID == editedDevice.deviceID){
-                                        if(selectedDevice.caliber != editedDevice.caliber){
+                                        if(
+                                            selectedDevice.caliber !in
+                                            (editedDevice.caliber-0.05)..(editedDevice.caliber+0.05)
+                                        ){
                                             navController.previousBackStackEntry
                                                 ?.savedStateHandle
                                                 ?.remove<Device?>("device")
@@ -262,7 +268,10 @@ fun DevicesScreen(
                                 device = device,
                                 onClick = {
                                     if(isScreenSelector){
-                                        if(selectedBullet != null && device.caliber != selectedBullet.caliber){
+                                        if(
+                                            selectedBullet != null &&
+                                            device.caliber !in (selectedBullet.caliber-0.05)..(selectedBullet.caliber+0.05)
+                                        ){
                                             navController.previousBackStackEntry
                                                 ?.savedStateHandle
                                                 ?.remove<Bullet?>("bullet")
@@ -279,7 +288,10 @@ fun DevicesScreen(
                                     viewModel.clearFound()
                                     viewModel.doSearch(screenState.searchQuery)
                                     if(selectedDevice != null && selectedDevice.deviceID == editedDevice.deviceID){
-                                        if(selectedDevice.caliber != editedDevice.caliber){
+                                        if(
+                                            selectedDevice.caliber !in
+                                            (editedDevice.caliber-0.05)..(editedDevice.caliber+0.05)
+                                        ){
                                             navController.previousBackStackEntry
                                                 ?.savedStateHandle
                                                 ?.remove<Device?>("device")

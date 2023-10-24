@@ -113,9 +113,10 @@ fun SortBySelector(
 enum class SortBy(val title: String) {
     DeviceName("Назва пристрою"),
     DeviceType("Тип пристрою"),
+    DeviceCaliber("Калібр пристрою"),
     BulletName("Назва кулі"),
     BulletWeight("Вага кулі"),
-    Caliber("Калібр"),
+    BulletCaliber("Калібр кулі"),
     Speed("Швидкість"),
     Energy("Енергія")
 }
