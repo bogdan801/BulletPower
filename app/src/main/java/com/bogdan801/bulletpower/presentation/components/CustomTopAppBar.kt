@@ -65,6 +65,14 @@ fun CustomTopAppBar(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(64.dp),
+                contentAlignment = Alignment.Center
+            ){
+                backButton?.invoke()
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
                     .weight(1f),
                 contentAlignment = Alignment.BottomCenter
             ){
@@ -80,15 +88,7 @@ fun CustomTopAppBar(
                     overflow = TextOverflow.Visible
                 )
             }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp)
-                    .rotate(-90f),
-                contentAlignment = Alignment.Center
-            ){
-                backButton?.invoke()
-            }
+            Spacer(h = 24.dp)
         }
     }
 }

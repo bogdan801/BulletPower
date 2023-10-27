@@ -82,7 +82,7 @@ fun Navigation(
             RatingScreen(navController = navController)
         }
         composable(
-            route = Screen.Graph().route + "/{shots}/{deviceName}/{bulletName}",
+            route = Screen.Graph().route + "/{shots}/{deviceName}/{bulletName}/{bulletWeight}",
             enterTransition = TransitionsUtil.enterSlideInTransition(speedOfTransition),
             exitTransition = TransitionsUtil.exitSlideInTransition(speedOfTransition),
             popEnterTransition = TransitionsUtil.enterSlideInTransition(speedOfTransition, true),
@@ -96,18 +96,22 @@ fun Navigation(
                 },
                 navArgument("bulletName"){
                     type = NavType.StringType
+                },
+                navArgument("bulletWeight"){
+                    type = NavType.StringType
                 }
             )
-
         ){ entry ->
             val shotsString = entry.arguments!!.getString("shots")!!
             val deviceName = entry.arguments!!.getString("deviceName")!!
             val bulletName = entry.arguments!!.getString("bulletName")!!
+            val bulletWeight = entry.arguments!!.getString("bulletWeight")!!
             GraphScreen(
                 navController = navController,
                 data = shotsString.toShotList(),
                 deviceName = if(deviceName == "-") null else deviceName,
-                bulletName = if(bulletName == "-") null else bulletName
+                bulletName = if(bulletName == "-") null else bulletName,
+                bulletWeight = if(bulletWeight == "-") null else bulletWeight
             )
         }
         composable(

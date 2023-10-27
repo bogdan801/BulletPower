@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -118,7 +117,7 @@ fun AddEditDeviceDialogBox(
                 type = TextFieldType.Double
             )
             Button(
-                modifier = Modifier.size(128.dp, 40.dp),
+                modifier = Modifier.height(40.dp),
                 onClick = {
                     if(name.isBlank()) {
                         Toast.makeText(context, "Ім'я не може бути порожнім", Toast.LENGTH_SHORT).show()
@@ -258,7 +257,7 @@ fun AddEditBulletDialogBox(
                 type = TextFieldType.Double
             )
             Button(
-                modifier = Modifier.size(128.dp, 40.dp),
+                modifier = Modifier.height(40.dp),
                 onClick = {
                     if(name.isBlank()) {
                         Toast.makeText(context, "Ім'я не може бути порожнім", Toast.LENGTH_SHORT).show()

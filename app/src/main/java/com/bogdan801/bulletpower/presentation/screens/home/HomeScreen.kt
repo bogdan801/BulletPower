@@ -2,6 +2,7 @@ package com.bogdan801.bulletpower.presentation.screens.home
 
 import android.content.pm.ActivityInfo
 import android.widget.Toast
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -62,6 +63,7 @@ import com.bogdan801.bulletpower.presentation.components.ButtonGridCell
 import com.bogdan801.bulletpower.presentation.components.ConfirmationDialog
 import com.bogdan801.bulletpower.presentation.components.CustomTopAppBar
 import com.bogdan801.bulletpower.presentation.components.DigitDisplay
+import com.bogdan801.bulletpower.presentation.components.DisplayActionState
 import com.bogdan801.bulletpower.presentation.components.DisplayGridCell
 import com.bogdan801.bulletpower.presentation.components.DisplaySize
 import com.bogdan801.bulletpower.presentation.components.EmptyGridCell
@@ -73,7 +75,9 @@ import com.bogdan801.bulletpower.presentation.components.StatsRow
 import com.bogdan801.bulletpower.presentation.components.StatsRowType
 import com.bogdan801.bulletpower.presentation.components.TextGridCell
 import com.bogdan801.bulletpower.presentation.navigation.Screen
+import com.bogdan801.bulletpower.presentation.util.Keyboard
 import com.bogdan801.bulletpower.presentation.util.LockScreenOrientation
+import com.bogdan801.bulletpower.presentation.util.keyboardAsState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -99,16 +103,20 @@ fun HomeScreen(
         .getStateFlow<Bullet?>("bullet", null)
         .collectAsStateWithLifecycle()
 
+    var cachedDeviceID by rememberSaveable { mutableStateOf<Int?>(null) }
+    var cachedBulletID by rememberSaveable { mutableStateOf<Int?>(null) }
     LaunchedEffect(key1 = bullet){
-        if(bullet != null) {
-            viewModel.setBulletWeight(bullet!!.weight)
-            if(bullet!!.weight != screenState.bulletWeight) {
-                viewModel.clearSeries()
-            }
+        if (bullet?.bulletID != cachedBulletID){
+            viewModel.setBulletWeight(if(bullet != null) bullet!!.weight else 0.0)
+            viewModel.clearEnteredData()
+            cachedBulletID = bullet?.bulletID
         }
-        else {
-            viewModel.setBulletWeight(0.0)
-            viewModel.clearSeries()
+    }
+
+    LaunchedEffect(key1 = device){
+        if(device?.deviceID != cachedDeviceID){
+            viewModel.clearEnteredData()
+            cachedDeviceID = device?.deviceID
         }
     }
 
@@ -164,7 +172,12 @@ fun HomeScreen(
                 }
             )
 
-            Spacer(h = 24.dp)
+            val keyboardState by keyboardAsState()
+            val spacing by animateDpAsState(
+                targetValue = if(keyboardState == Keyboard.Opened) 8.dp else 24.dp,
+                label = ""
+            )
+            Spacer(h = spacing)
             Column(
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
@@ -200,7 +213,7 @@ fun HomeScreen(
                     )
                 }
             }
-            Spacer(h = 24.dp)
+            Spacer(h = spacing)
 
             var tabIndexState by rememberSaveable { mutableIntStateOf(0) }
             TabRow(
@@ -356,7 +369,9 @@ fun HomeScreen(
                                             energy = screenState.singleShotEnergy
                                         )
                                         showWarningDialog = false
-                                        viewModel.addSingleShotToRating(shotToAdd, device!!, bullet!!, isUpdate = true)
+                                        viewModel.addSingleShotToRating(
+                                            shotToAdd, device!!, bullet!!, isUpdate = true
+                                        )
                                         navController.navigate(
                                             Screen.Rating(isSingleShot = true).routeWithArgs
                                         )
@@ -376,6 +391,9 @@ fun HomeScreen(
                             ) {
                                 ShotRow(isTitle = true)
                                 Spacer(h = 1.dp)
+                                val displayActionState = remember {
+                                    DisplayActionState()
+                                }
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -392,6 +410,7 @@ fun HomeScreen(
                                         modifier = Modifier
                                             .fillMaxHeight()
                                             .weight(1f),
+                                        displayActionState = displayActionState,
                                         displaySize = DisplaySize.Small,
                                         dotAfterDigit = 3,
                                         value = screenState.multipleShotSpeed,
@@ -453,6 +472,7 @@ fun HomeScreen(
                                                         energy = screenState.multipleShotEnergy
                                                     )
                                                 )
+                                                displayActionState.clear()
                                             }
                                         }
                                     )
@@ -571,13 +591,17 @@ fun HomeScreen(
                                                         Screen.Graph(
                                                             shots = screenState.shotSeries,
                                                             deviceName = device?.name,
-                                                            bulletName = bullet?.name
+                                                            bulletName = bullet?.name,
+                                                            bulletWeight = if(bullet == null) null
+                                                                           else bullet!!.weight.toString()
                                                         ).routeWithArgs
                                                     )
                                                 }
                                             )
                                             if(device != null && bullet != null){
-                                                var showWarningDialog by rememberSaveable { mutableStateOf(false) }
+                                                var showWarningDialog by rememberSaveable {
+                                                    mutableStateOf(false)
+                                                }
                                                 Spacer(w = 1.dp)
                                                 ButtonGridCell(
                                                     modifier = Modifier

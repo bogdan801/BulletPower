@@ -76,10 +76,14 @@ constructor(
         }
     }
 
-    fun clearSeries(){
+    fun clearEnteredData(){
         _screenState.update {
             it.copy(
-                shotSeries = listOf()
+                shotSeries = listOf(),
+                singleShotSpeed = 0.0,
+                singleShotEnergy = 0.0,
+                multipleShotSpeed = 0.0,
+                multipleShotEnergy = 0.0
             )
         }
     }

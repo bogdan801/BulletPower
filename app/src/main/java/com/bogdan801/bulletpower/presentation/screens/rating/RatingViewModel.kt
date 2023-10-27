@@ -48,9 +48,11 @@ constructor(
             if(_screenState.value.isSingleShot){
                 _screenState.update {
                     it.copy(
-                        foundSingleShots = repository.searchSingleShotRating(
-                            searchQuery = searchQuery,
-                            listToSearch = _screenState.value.singleShotList
+                        foundSingleShots = sortSingleShotList(
+                            repository.searchSingleShotRating(
+                                searchQuery = searchQuery,
+                                listToSearch = _screenState.value.singleShotList
+                            )
                         )
                     )
                 }
@@ -58,9 +60,11 @@ constructor(
             else {
                 _screenState.update {
                     it.copy(
-                        foundMultipleShots = repository.searchMultipleShotRating(
-                            searchQuery = searchQuery,
-                            listToSearch = _screenState.value.multipleShotList
+                        foundMultipleShots = sortMultipleShotList(
+                            repository.searchMultipleShotRating(
+                                searchQuery = searchQuery,
+                                listToSearch = _screenState.value.multipleShotList
+                            )
                         )
                     )
                 }
@@ -132,6 +136,8 @@ constructor(
         }
         if(_screenState.value.isSingleShot) setSingleShotRatingList()
         else setMultipleShotRatingList()
+
+        if(_screenState.value.searchQuery.isNotBlank()) doSearch()
     }
 
     fun setSortBy(sortBy: SortBy){

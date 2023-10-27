@@ -11,11 +11,13 @@ sealed class Screen(val route: String = "", val routeWithArgs: String = ""){
         val shots: List<ShotRatingItem>? = null,
         val deviceName: String? = null,
         val bulletName: String? = null,
+        val bulletWeight: String? = null
     ) : Screen(
         route = "graph",
         routeWithArgs = "graph/${shots?.toStringRepresentation()}" +
                         "/${deviceName ?: "-"}" +
-                        "/${bulletName ?: "-"}"
+                        "/${bulletName ?: "-"}" +
+                        "/${bulletWeight ?: "-"}"
     )
     data class Rating(
         val isSingleShot: Boolean = true

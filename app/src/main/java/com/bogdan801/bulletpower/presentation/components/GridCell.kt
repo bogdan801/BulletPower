@@ -189,6 +189,7 @@ fun EmptyGridCell(
 @Composable
 fun DisplayGridCell(
     modifier: Modifier,
+    displayActionState: DisplayActionState? = null,
     containerColor: Color = MaterialTheme.colorScheme.secondaryContainer,
     isReadOnly: Boolean = false,
     digitCount: Int = 4,
@@ -206,6 +207,7 @@ fun DisplayGridCell(
     ){
         DigitDisplay(
             value = value,
+            displayActionState = displayActionState,
             onValueChange = onValueChange,
             isReadOnly = isReadOnly,
             digitCount = digitCount,

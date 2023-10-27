@@ -257,7 +257,9 @@ fun RatingScreen(
                                             Screen.Graph(
                                                 shots = item.shots,
                                                 deviceName = item.device?.name,
-                                                bulletName = item.bullet?.name
+                                                bulletName = item.bullet?.name,
+                                                bulletWeight = if(item.bullet == null) null
+                                                               else item.bullet.weight.toString()
                                             ).routeWithArgs
                                         )
                                     },
@@ -321,7 +323,9 @@ fun RatingScreen(
                                             Screen.Graph(
                                                 shots = item.shots,
                                                 deviceName = item.device?.name,
-                                                bulletName = item.bullet?.name
+                                                bulletName = item.bullet?.name,
+                                                bulletWeight = if(item.bullet == null) null
+                                                               else item.bullet.weight.toString()
                                             ).routeWithArgs
                                         )
                                     },

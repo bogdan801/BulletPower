@@ -1,7 +1,5 @@
 package com.bogdan801.bulletpower.presentation.components
 
-import android.graphics.Rect
-import android.view.ViewTreeObserver
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -24,9 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -43,7 +39,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -58,6 +53,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun DigitDisplay(
     modifier: Modifier = Modifier,
+    displayActionState: DisplayActionState? = null,
     displaySize: DisplaySize = DisplaySize.Large,
     digitCount: Int = 4,
     dotAfterDigit: Int? = 1,
@@ -120,6 +116,25 @@ fun DigitDisplay(
             isFocused = true
         }
     }
+    LaunchedEffect(key1 = true){
+        displayActionState?.setClearAction {
+            displayState = buildString {
+                repeat(digitCount){
+                    append('0')
+                }
+            }
+            val selectedDigitMap = digitFocusMap.value.filter { it.value }
+            if(selectedDigitMap.isNotEmpty()){
+                val selectedID = selectedDigitMap.keys.toList()[0]
+                repeat(selectedID){
+                    focusManager.moveFocus(FocusDirection.Previous)
+                }
+            }
+            onValueChange(displayState.toDoubleDisplay(dynamicDotAfterDigit))
+        }
+    }
+
+
 
     Row(
         modifier = modifier.height(cellHeight)
@@ -202,6 +217,15 @@ fun DigitDisplay(
                 }
             }
         }
+    }
+}
+
+class DisplayActionState {
+    var clear: () -> Unit = {}
+        private set
+
+    fun setClearAction(action: () -> Unit){
+        clear = action
     }
 }
 

@@ -28,8 +28,6 @@ import co.yml.charts.ui.linechart.model.LineType
 import co.yml.charts.ui.linechart.model.SelectionHighlightPoint
 import co.yml.charts.ui.linechart.model.SelectionHighlightPopUp
 import co.yml.charts.ui.linechart.model.ShadowUnderLine
-import kotlin.math.ceil
-import kotlin.math.floor
 import kotlin.math.roundToInt
 
 @Composable
@@ -185,28 +183,24 @@ fun Graph(
 
 
 private class GraphDataUtil(
-    data: List<Point>,
-    enableAxisPadding: Boolean = true
+    data: List<Point>
 ){
     val minY = data.minOf { it.y }
     val medY = data.sumOf { it.y.toDouble() } / data.size.toFloat()
     val maxY = data.maxOf { it.y }
 
-    private val difference = maxY - minY
-    private val yPadding = if(enableAxisPadding) (difference * 0.3).roundToInt() else 0
+    private val scaleFactor = setScaleFactor(maxY - minY)
 
-    val yLowerBound = setLowerBound(floor(minY).toInt(), ceil(maxY).toInt(), yPadding)
-    val yUpperBound = setUpperBound(floor(minY).toInt(), ceil(maxY).toInt(), yPadding)
+    val yLowerBound = setLowerBound(minY.toDouble(), scaleFactor)
+    val yUpperBound = setUpperBound(maxY.toDouble(), scaleFactor)
 
-    private val yIntRange = yUpperBound.toInt() - yLowerBound.toInt()
+    private val yRange = yUpperBound - yLowerBound
 
-    private val scaleFactor = setScaleFactor(yIntRange)
-
-    val steps = (yIntRange / scaleFactor).roundToInt()
+    val steps = (yRange / scaleFactor).roundToInt()
 
     fun label(i: Int) = String.format("%.1f", yLowerBound + (scaleFactor * i)).replace(".0", "")
 
-    private fun setScaleFactor(range: Int) = when {
+    private fun setScaleFactor(range: Float) = when {
         range > 5000 -> 500.0
         range >= 2500 -> 200.0
         range >= 1000 -> 100.0
@@ -222,19 +216,11 @@ private class GraphDataUtil(
         else -> 100.0
     }
 
-    private fun setLowerBound(min: Int, max: Int, padding: Int): Float {
-        val minP = min - padding
-        val maxP = max + padding
-        val range = maxP - minP
-        val factor = setScaleFactor(range)
-        return if(range != 0) (minP - (minP % factor).roundToInt()).toFloat() else minP - 0.5f
+    private fun setLowerBound(min: Double, factor: Double, padding: Int = 2): Float {
+        return (min - (min % factor) - (padding * factor)).toFloat()
     }
 
-    private fun setUpperBound(min: Int, max: Int, padding: Int): Float {
-        val minP = min - padding
-        val maxP = max + padding
-        val range = maxP - minP
-        val factor = setScaleFactor(range)
-        return if(range != 0) ((maxP.toDouble() + factor - (maxP % factor)).roundToInt()).toFloat() else maxP + 0.5f
+    private fun setUpperBound(max: Double, factor: Double, padding: Int = 2): Float {
+        return (max + (factor - max % factor) + (padding * factor)).toFloat()
     }
 }

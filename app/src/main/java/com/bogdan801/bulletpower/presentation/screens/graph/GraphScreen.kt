@@ -60,7 +60,8 @@ fun GraphScreen(
     viewModel: GraphViewModel = hiltViewModel(),
     data: List<ShotRatingItem>,
     deviceName: String? = null,
-    bulletName: String? = null
+    bulletName: String? = null,
+    bulletWeight: String? = null
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -118,7 +119,7 @@ fun GraphScreen(
                     val type = if(screenState.dataToShow == GraphDataType.Energy) "Графік_Енергії"
                                else "Графік_Швидкості"
                     val device = if(deviceName != null) "_$deviceName" else ""
-                    val bullet = if(bulletName != null) "_$bulletName" else ""
+                    val bullet = if(bulletName != null) "_$bulletName(${bulletWeight}гр.)" else ""
                     val timeStamp = "_" + getCurrentTimeStamp()
                     val defaultTitle = "$type$device$bullet$timeStamp.png"
                     launcher.launch(defaultTitle)
@@ -163,9 +164,9 @@ fun GraphScreen(
                         modifier = Modifier
                             .align(Alignment.TopCenter)
                             .offset(y = 6.dp),
-                        text = if(deviceName == null) "$bulletName"
+                        text = if(deviceName == null) "$bulletName(${bulletWeight}гр.)"
                                else if(bulletName == null) "$deviceName"
-                               else "$deviceName - $bulletName",
+                               else "$deviceName - $bulletName(${bulletWeight}гр.)",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
