@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,11 +43,13 @@ fun MenuItem(
             icon(this)
         }
         Box(modifier = Modifier.fillMaxSize()) {
-            Text(
+            AutoSizeText(
                 modifier = Modifier.align(Alignment.CenterStart),
                 text = title,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
+                maxTextSize = MaterialTheme.typography.bodyMedium.fontSize,
+                minTextSize = MaterialTheme.typography.labelMedium.fontSize
             )
             if(showDivider){
                 HorizontalDivider(

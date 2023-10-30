@@ -149,20 +149,24 @@ fun SelectionItem(
                         onClick = onItemClick
                     )
                     .background(MaterialTheme.colorScheme.primaryContainer)
-                    .padding(start = 16.dp),
+                    .padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.Start
             ) {
-                Text(
+                AutoSizeText(
                     text = itemTitle,
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxTextSize = MaterialTheme.typography.titleMedium.fontSize,
+                    minTextSize = MaterialTheme.typography.labelMedium.fontSize
                 )
                 Spacer(h = 4.dp)
-                Text(
+                AutoSizeText(
                     text = itemSubtitle,
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxTextSize = MaterialTheme.typography.labelMedium.fontSize,
+                    minTextSize = MaterialTheme.typography.labelSmall.fontSize
                 )
             }
             Box(

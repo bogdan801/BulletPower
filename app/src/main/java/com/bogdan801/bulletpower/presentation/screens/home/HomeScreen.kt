@@ -384,115 +384,111 @@ fun HomeScreen(
                         Column(
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            Column(
+                            LazyColumn(
                                 modifier = Modifier
-                                    .fillMaxSize()
-                                    .weight(1f)
+                                    .fillMaxWidth()
+                                    .weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(1.dp)
                             ) {
-                                ShotRow(isTitle = true)
-                                Spacer(h = 1.dp)
-                                val displayActionState = remember {
-                                    DisplayActionState()
-                                }
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(58.dp)
-                                ) {
-                                    TextGridCell(
+                                item {
+                                    ShotRow(isTitle = true)
+                                    Spacer(h = 1.dp)
+                                    val displayActionState = remember {
+                                        DisplayActionState()
+                                    }
+                                    Row(
                                         modifier = Modifier
-                                            .fillMaxHeight()
-                                            .width(36.dp),
-                                        text = (screenState.shotSeries.size + 1).toString()
-                                    )
-                                    Spacer(w = 1.dp)
-                                    DisplayGridCell(
-                                        modifier = Modifier
-                                            .fillMaxHeight()
-                                            .weight(1f),
-                                        displayActionState = displayActionState,
-                                        displaySize = DisplaySize.Small,
-                                        dotAfterDigit = 3,
-                                        value = screenState.multipleShotSpeed,
-                                        shouldCloseKeyboard = false,
-                                        onValueChange = { newValue ->
-                                            viewModel.setMultipleShotSpeed(newValue)
-                                        }
-                                    )
-                                    Spacer(w = 1.dp)
-                                    DisplayGridCell(
-                                        modifier = Modifier
-                                            .fillMaxHeight()
-                                            .weight(1f),
-                                        displaySize = DisplaySize.Small,
-                                        dotAfterDigit = null,
-                                        value = screenState.multipleShotEnergy,
-                                        isReadOnly = true
-                                    )
-                                }
-                                Spacer(h = 1.dp)
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(36.dp)
-                                ) {
-                                    TextGridCell(
-                                        modifier = Modifier
-                                            .fillMaxHeight()
-                                            .width(36.dp),
-                                        text = "+",
-                                        containerColor = MaterialTheme.colorScheme.secondaryContainer
-                                    )
-                                    Spacer(w = 1.dp)
-                                    ButtonGridCell(
-                                        modifier = Modifier
-                                            .fillMaxHeight()
-                                            .weight(1f),
-                                        title = "Додати постріл до серії",
-                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                        onClick = {
-                                            if(screenState.multipleShotSpeed == 0.0){
-                                                Toast.makeText(
-                                                    context,
-                                                    "Швидкість пострілу не може дорівнювати 0!",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
+                                            .fillMaxWidth()
+                                            .height(58.dp)
+                                    ) {
+                                        TextGridCell(
+                                            modifier = Modifier
+                                                .fillMaxHeight()
+                                                .width(36.dp),
+                                            text = (screenState.shotSeries.size + 1).toString()
+                                        )
+                                        Spacer(w = 1.dp)
+                                        DisplayGridCell(
+                                            modifier = Modifier
+                                                .fillMaxHeight()
+                                                .weight(1f),
+                                            displayActionState = displayActionState,
+                                            displaySize = DisplaySize.Small,
+                                            dotAfterDigit = 3,
+                                            value = screenState.multipleShotSpeed,
+                                            shouldCloseKeyboard = false,
+                                            onValueChange = { newValue ->
+                                                viewModel.setMultipleShotSpeed(newValue)
                                             }
-                                            else if(screenState.bulletWeight == 0.0){
-                                                Toast.makeText(
-                                                    context,
-                                                    "Маса кулі не може дорівнювати 0!",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                            }
-                                            else{
-                                                viewModel.addShotToTheSeries(
-                                                    ShotRatingItem(
-                                                        speed = screenState.multipleShotSpeed,
-                                                        energy = screenState.multipleShotEnergy
+                                        )
+                                        Spacer(w = 1.dp)
+                                        DisplayGridCell(
+                                            modifier = Modifier
+                                                .fillMaxHeight()
+                                                .weight(1f),
+                                            displaySize = DisplaySize.Small,
+                                            dotAfterDigit = null,
+                                            value = screenState.multipleShotEnergy,
+                                            isReadOnly = true
+                                        )
+                                    }
+                                    Spacer(h = 1.dp)
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(36.dp)
+                                    ) {
+                                        TextGridCell(
+                                            modifier = Modifier
+                                                .fillMaxHeight()
+                                                .width(36.dp),
+                                            text = "+",
+                                            containerColor = MaterialTheme.colorScheme.secondaryContainer
+                                        )
+                                        Spacer(w = 1.dp)
+                                        ButtonGridCell(
+                                            modifier = Modifier
+                                                .fillMaxHeight()
+                                                .weight(1f),
+                                            title = "Додати постріл до серії",
+                                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                            onClick = {
+                                                if(screenState.multipleShotSpeed == 0.0){
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Швидкість пострілу не може дорівнювати 0!",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
+                                                else if(screenState.bulletWeight == 0.0){
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Маса кулі не може дорівнювати 0!",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
+                                                else{
+                                                    viewModel.addShotToTheSeries(
+                                                        ShotRatingItem(
+                                                            speed = screenState.multipleShotSpeed,
+                                                            energy = screenState.multipleShotEnergy
+                                                        )
                                                     )
-                                                )
-                                                displayActionState.clear()
-                                            }
-                                        }
-                                    )
-                                }
-                                Spacer(h = 1.dp)
-                                LazyColumn(
-                                    modifier = Modifier
-                                        .fillMaxSize(),
-                                    verticalArrangement = Arrangement.spacedBy(1.dp)
-                                ) {
-                                    items(screenState.shotSeries.size){ i ->
-                                        val shotID = screenState.shotSeries.lastIndex - i
-                                        ShotRow(
-                                            number = screenState.shotSeries.size - i,
-                                            shot = screenState.shotSeries[shotID],
-                                            onDeleteRowClick = {
-                                                viewModel.removeShotFromTheSeries(shotID)
+                                                    displayActionState.clear()
+                                                }
                                             }
                                         )
                                     }
+                                }
+                                items(screenState.shotSeries.size){ i ->
+                                    val shotID = screenState.shotSeries.lastIndex - i
+                                    ShotRow(
+                                        number = screenState.shotSeries.size - i,
+                                        shot = screenState.shotSeries[shotID],
+                                        onDeleteRowClick = {
+                                            viewModel.removeShotFromTheSeries(shotID)
+                                        }
+                                    )
                                 }
                             }
                             if(screenState.shotSeries.size > 1){

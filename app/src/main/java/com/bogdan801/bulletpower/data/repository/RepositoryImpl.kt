@@ -1,6 +1,5 @@
 package com.bogdan801.bulletpower.data.repository
 
-import android.content.Context
 import com.bogdan801.bulletpower.data.database_local.Dao
 import com.bogdan801.bulletpower.data.database_local.toBulletEntity
 import com.bogdan801.bulletpower.data.database_local.toDeviceEntity
@@ -181,16 +180,16 @@ class RepositoryImpl(
 
     override fun searchSingleShotRating(searchQuery: String, listToSearch: List<SingleShotRatingItem>): List<SingleShotRatingItem> {
         val outputList = mutableListOf<SingleShotRatingItem>()
-
+        val query = searchQuery.lowercase()
         listToSearch.forEach { item ->
             if(item.device!=null && item.bullet!= null){
                 if(
-                    item.device.name.contains(searchQuery) ||
-                    item.bullet.name.contains(searchQuery) ||
-                    item.device.caliber.toString().contains(searchQuery) ||
-                    item.bullet.caliber.toString().contains(searchQuery) ||
-                    item.device.type.contains(searchQuery) ||
-                    item.bullet.weight.toString().contains(searchQuery)
+                    item.device.name.lowercase().contains(query) ||
+                    item.bullet.name.lowercase().contains(query) ||
+                    item.device.caliber.toString().lowercase().contains(query) ||
+                    item.bullet.caliber.toString().lowercase().contains(query) ||
+                    item.device.type.lowercase().contains(query) ||
+                    item.bullet.weight.toString().lowercase().contains(query)
                 ) {
                     outputList.add(item)
                 }
@@ -202,16 +201,16 @@ class RepositoryImpl(
 
     override fun searchMultipleShotRating(searchQuery: String, listToSearch: List<MultipleShotRatingItem>): List<MultipleShotRatingItem> {
         val outputList = mutableListOf<MultipleShotRatingItem>()
-
+        val query = searchQuery.lowercase()
         listToSearch.forEach { item ->
             if(item.device!=null && item.bullet!= null){
                 if(
-                    item.device.name.contains(searchQuery) ||
-                    item.bullet.name.contains(searchQuery) ||
-                    item.device.caliber.toString().contains(searchQuery) ||
-                    item.bullet.caliber.toString().contains(searchQuery) ||
-                    item.device.type.contains(searchQuery) ||
-                    item.bullet.weight.toString().contains(searchQuery)
+                    item.device.name.lowercase().contains(query) ||
+                    item.bullet.name.lowercase().contains(query) ||
+                    item.device.caliber.toString().lowercase().contains(query) ||
+                    item.bullet.caliber.toString().lowercase().contains(query) ||
+                    item.device.type.lowercase().contains(query) ||
+                    item.bullet.weight.toString().lowercase().contains(query)
                 ) {
                     outputList.add(item)
                 }

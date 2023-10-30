@@ -49,7 +49,7 @@ fun SingleShotRatingCard(
     modifier: Modifier = Modifier,
     number: Int = 0,
     item: SingleShotRatingItem,
-    weights: List<Float> = listOf(2f, 2f, 1f, 1f),
+    weights: List<Float> = listOf(2f, 2f, 1.2f, 1.2f),
     height: Dp = 64.dp,
     onDeleteItemClick: (id: Int) -> Unit,
     onEditItem: (SingleShotRatingItem) -> Unit
@@ -209,7 +209,7 @@ fun MultipleShotRatingCard(
     modifier: Modifier = Modifier,
     number: Int = 0,
     item: MultipleShotRatingItem,
-    weights: List<Float> = listOf(2f, 2f, 1f, 1f),
+    weights: List<Float> = listOf(2f, 2f, 1.2f, 1.2f),
     height: Dp = 64.dp,
     isExpanded: Boolean = false,
     onExpandToggle: () -> Unit = {},
@@ -369,7 +369,7 @@ fun RatingShotRow(
     number: Int = 0,
     item: ShotRatingItem,
     bulletWeight: Double = 0.0,
-    weights: List<Float> = listOf(2f, 2f, 1f, 1f),
+    weights: List<Float> = listOf(2f, 2f, 1.2f, 1.2f),
     height: Dp = 24.dp,
     onDeleteItem: (id: Int) -> Unit = {},
     onEditItem: (editedItem: ShotRatingItem) -> Unit = {}
@@ -530,7 +530,7 @@ fun RatingShotRow(
 fun TitleRatingCard(
     modifier: Modifier = Modifier,
     isSingleShot: Boolean = true,
-    weights: List<Float> = listOf(2f, 2f, 1f, 1f),
+    weights: List<Float> = listOf(2f, 2f, 1.2f, 1.2f),
     height: Dp = 36.dp
 ) {
     Row(

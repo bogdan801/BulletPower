@@ -38,7 +38,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.bogdan801.bulletpower.R
 import com.bogdan801.bulletpower.presentation.components.BasicDialogBox
@@ -47,11 +46,9 @@ import com.bogdan801.bulletpower.presentation.components.MenuItem
 import com.bogdan801.bulletpower.presentation.navigation.Screen
 import com.bogdan801.bulletpower.presentation.util.LockScreenOrientation
 
-
 @Composable
 fun MenuScreen(
-    navController: NavController,
-    viewModel: MenuViewModel = hiltViewModel()
+    navController: NavController
 ) {
     LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
     val context = LocalContext.current
@@ -294,28 +291,30 @@ fun MenuScreen(
                     }
                 }
             )
-            Text(
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .clickable {
-                        val url = "https://play.google.com/store/apps/developer?id=bogdan801"
-                        var intent = Intent(Intent.ACTION_VIEW)
+            SelectionContainer {
+                Text(
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .clickable {
+                            val url = "https://play.google.com/store/apps/developer?id=bogdan801"
+                            var intent = Intent(Intent.ACTION_VIEW)
 
-                        try {
-                            intent.setPackage("com.android.vending")
-                            intent.data = Uri.parse(url)
-                            startActivity(context, intent, null)
-                        } catch (e: ActivityNotFoundException) {
-                            intent = Intent(Intent.ACTION_VIEW)
-                            intent.data = Uri.parse(url)
-                            startActivity(context, intent, null)
-                        }
-                    },
-                text = "Розробив @bogdan.801 bogdan2002801@gmail.com",
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.labelMedium
-            )
+                            try {
+                                intent.setPackage("com.android.vending")
+                                intent.data = Uri.parse(url)
+                                startActivity(context, intent, null)
+                            } catch (e: ActivityNotFoundException) {
+                                intent = Intent(Intent.ACTION_VIEW)
+                                intent.data = Uri.parse(url)
+                                startActivity(context, intent, null)
+                            }
+                        },
+                    text = "Розробив @bogdan.801 bogdan2002801@gmail.com",
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.labelMedium
+                )
+            }
             Text(
                 text = "Версія 1.0",
                 textAlign = TextAlign.Center,

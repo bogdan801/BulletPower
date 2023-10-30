@@ -7,10 +7,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,8 +34,8 @@ fun SelectorButton(
             .height(48.dp)
             .background(MaterialTheme.colorScheme.secondaryContainer)
             .clickable(onClick = onClick)
-            .then(modifier)
-            ,
+            .padding(horizontal = 16.dp)
+            .then(modifier),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -45,7 +45,7 @@ fun SelectorButton(
             tint = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Text(
+        AutoSizeText(
             text = when(selectionItem){
                 SelectionItem.Device -> {
                     if(selectedDevice == null) "Пристрій"
@@ -57,7 +57,9 @@ fun SelectorButton(
                 }
             },
             color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium,
+            maxTextSize = MaterialTheme.typography.titleMedium.fontSize,
+            minTextSize = MaterialTheme.typography.bodyMedium.fontSize
         )
     }
 }

@@ -32,6 +32,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import com.bogdan801.bulletpower.presentation.util.Keyboard
 import com.bogdan801.bulletpower.presentation.util.difference
@@ -57,20 +58,24 @@ fun ItemGridCell(
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(start = 16.dp),
+                .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.Start
         ) {
-            Text(
+            AutoSizeText(
                 text = itemTitle,
                 style = MaterialTheme.typography.titleMedium,
-                color = titleColor
+                color = titleColor,
+                maxTextSize = MaterialTheme.typography.titleMedium.fontSize,
+                minTextSize = MaterialTheme.typography.bodyMedium.fontSize
             )
             Spacer(h = 4.dp)
-            Text(
+            AutoSizeText(
                 text = "$itemSubtitle1 • $itemSubtitle2",
                 style = MaterialTheme.typography.labelMedium,
-                color = subtitleColor
+                color = subtitleColor,
+                maxTextSize = MaterialTheme.typography.labelMedium.fontSize,
+                minTextSize = MaterialTheme.typography.labelSmall.fontSize
             )
         }
     }
@@ -156,6 +161,7 @@ fun TextGridCell(
     modifier: Modifier,
     text: String,
     textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
+    minTextSize: TextUnit = MaterialTheme.typography.labelSmall.fontSize,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
     containerColor: Color = MaterialTheme.colorScheme.primaryContainer
 ) {
@@ -165,11 +171,14 @@ fun TextGridCell(
             .then(modifier),
         contentAlignment = Alignment.Center
     ){
-        Text(
+        AutoSizeText(
+            modifier = Modifier.padding(horizontal = 8.dp),
             text = text,
             style = textStyle,
             color = textColor,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            maxTextSize = textStyle.fontSize,
+            minTextSize = minTextSize
         )
     }
 }

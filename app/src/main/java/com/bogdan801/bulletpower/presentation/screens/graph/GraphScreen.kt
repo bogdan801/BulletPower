@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -160,15 +161,20 @@ fun GraphScreen(
                     }
                 }
                 if(deviceName != null || bulletName != null){
+
                     Text(
                         modifier = Modifier
                             .align(Alignment.TopCenter)
                             .offset(y = 6.dp),
                         text = if(deviceName == null) "$bulletName(${bulletWeight}гр.)"
                                else if(bulletName == null) "$deviceName"
-                               else "$deviceName - $bulletName(${bulletWeight}гр.)",
+                               else if("$deviceName - $bulletName(${bulletWeight}гр.)".length < 30) {
+                                    "$deviceName - $bulletName(${bulletWeight}гр.)"
+                               }
+                               else "$deviceName\n$bulletName(${bulletWeight}гр.)",
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
+                        textAlign = TextAlign.Center
                     )
                 }
             }
