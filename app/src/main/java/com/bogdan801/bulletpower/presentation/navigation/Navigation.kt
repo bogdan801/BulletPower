@@ -1,5 +1,6 @@
 package com.bogdan801.bulletpower.presentation.navigation
 
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -19,7 +20,7 @@ fun Navigation(
     navController: NavHostController
 ) {
     val speedOfTransition = 200
-
+    ScaffoldDefaults.contentWindowInsets
     NavHost(
         navController = navController,
         startDestination = Screen.Home.route
