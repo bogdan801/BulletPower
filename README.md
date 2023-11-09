@@ -37,3 +37,5 @@ Simple app to measure the energy of bullets fired from pneumatic weapons
 - [Jetpack Compose](https://developer.android.com/jetpack/compose) for the UI
 - [Compose Navigation](https://developer.android.com/jetpack/compose/navigation)
 - [Accompanist libraries](https://google.github.io/accompanist/) for UI components that are not yet available in the default Jetpack Compose collection
+- [YCharts](https://github.com/codeandtheory/YCharts) chart library for Jetpack Compose
+- [Capturable](https://github.com/PatilShreyas/Capturable) library for exporting composable to a bitmap
